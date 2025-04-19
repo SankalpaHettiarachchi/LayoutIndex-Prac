@@ -23,7 +23,7 @@ class Order extends Model
         'status' => 'string'
     ];
 
-    public $incrementing = false;
+    public $incrementing = true;
     protected $keyType = 'string';
 
     // Status constants

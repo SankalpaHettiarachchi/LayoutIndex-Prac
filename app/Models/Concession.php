@@ -10,7 +10,7 @@ class Concession extends Model
 {
     use HasFactory;
 
-    protected $table = 'concessions'; // Explicit table name
+    protected $table = 'concession'; // Explicit table name
 
     protected $fillable = [
         'name',
