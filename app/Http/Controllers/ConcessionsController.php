@@ -2,34 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ConcessionsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(
+        protected ConcessionsInterface $concessionRepository
+    ) {}
+
     public function index(Request $request)
     {
-        $perPage = $request->input('per_page', 10);
-        $sortField = $request->input('sort', 'id');
-        $sortDirection = $request->input('direction', 'asc');
-        $search = $request->input('search');
-
-        $query = Concession::query()
-            ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            })
-            ->orderBy($sortField, $sortDirection);
-
-        $concessions = $query->paginate($perPage);
+        $filters = $request->only(['search', 'per_page', 'sort', 'direction']);
 
         return Inertia::render('Concessions/Index', [
-            'concessions' => $concessions,
-            'filters' => $request->only(['search', 'per_page', 'sort', 'direction'])
+            'concessions' => $this->concessionRepository->getAll($filters, $filters['per_page'] ?? 10),
+            'filters' => $filters
         ]);
     }
 
