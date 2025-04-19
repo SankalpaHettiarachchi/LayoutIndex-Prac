@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Concession extends Model
 {
@@ -17,7 +18,8 @@ class Concession extends Model
         'description',
         'image_path',
         'price',
-        'created_by' // Remove if using observer to set this
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
@@ -34,6 +36,11 @@ class Concession extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     // Relationship with orders (through pivot)

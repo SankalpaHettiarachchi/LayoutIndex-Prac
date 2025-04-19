@@ -1,16 +1,17 @@
-import { router } from '@inertiajs/react';
+import { router, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function DataTable({
-                                      data,
-                                      columns,
-                                      routeName,
-                                      filters = {},
-                                      withActions = true,
-                                      editRoute = null,
-                                      deleteRoute = null,
-                                      onDelete = null
-                                  }) {
+      data,
+      columns,
+      routeName,
+      filters = {},
+      withActions = true,
+      editRoute = null,
+      createRoute = null,
+      deleteRoute = null,
+      onDelete = null
+  }) {
     const [localFilters, setLocalFilters] = useState({
         search: filters.search || '',
         per_page: filters.per_page || 10,
@@ -56,6 +57,12 @@ export default function DataTable({
                     <option value="50">50 per page</option>
                     <option value="100">100 per page</option>
                 </select>
+                <Link
+                    href={route(createRoute)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2"
+                >
+                    Create New
+                </Link>
             </div>
 
             {/* Table */}

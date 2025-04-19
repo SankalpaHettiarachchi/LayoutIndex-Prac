@@ -28,7 +28,7 @@ class ConcessionsController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Concessions/createConcession');
     }
 
     /**
@@ -36,7 +36,22 @@ class ConcessionsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+        ]);
+
+        if ($request->hasFile('image_path')) {
+            $validated['image_path'] = $request->file('image_path')->store('concessions', 'public');
+        }
+
+        // Just create - the observer will handle created_by
+        Concession::create($validated);
+
+        return redirect()->route('concessions.index')
+            ->with('success', 'Concession created successfully!');
     }
 
     /**

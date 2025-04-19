@@ -36,6 +36,7 @@ class ConcessionSeeder extends Seeder
                 'image_path' => $imagePath,
                 'price' => (float) rand(100, 1000) + (rand(0, 99) / 100),
                 'created_by' => (string)$users->random()->id,
+                'updated_by' => (string)$users->random()->id,
             ]);
         }
 
