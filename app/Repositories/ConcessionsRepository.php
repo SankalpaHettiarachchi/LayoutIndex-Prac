@@ -5,6 +5,11 @@ namespace App\Repositories;
 use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ConcessionsRepository implements ConcessionsInterface
 {
@@ -24,5 +29,38 @@ class ConcessionsRepository implements ConcessionsInterface
                 $filters['direction'] ?? 'asc'
             )
             ->paginate($perPage);
+    }
+
+    public function createConcession(array $data, ?UploadedFile $image = null)
+    {
+        if ($image) {
+            $data['image_path'] = $this->processAndStoreImage($image);
+        }
+
+        return $this->model->create($data);
+    }
+
+    protected function processAndStoreImage(UploadedFile $image): string
+    {
+        // Initialize ImageManager with driver
+        $manager = new ImageManager(new Driver());
+
+        // Read the uploaded file
+        $img = $manager->read($image->getRealPath());
+
+        // Resize with aspect ratio preservation
+        $img->resize(800, 600, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+
+        // Generate unique filename and path
+        $filename = 'concession_'.Str::uuid().'.webp';
+        $path = 'concessions/'.$filename;
+
+        // Store in public disk as WebP
+        Storage::disk('public')->put($path, $img->toWebp(80));
+
+        return $path;
     }
 }

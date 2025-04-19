@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreConcessionRequest;
 use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use Illuminate\Http\Request;
@@ -34,21 +35,14 @@ class ConcessionsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreConcessionRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->hasFile('image_path')) {
-            $validated['image_path'] = $request->file('image_path')->store('concessions', 'public');
-        }
-
-        // Just create - the observer will handle created_by
-        Concession::create($validated);
+        $this->concessionRepository->createConcession(
+            $validated,
+            $request->file('image_path')
+        );
 
         return redirect()->route('concessions.index')
             ->with('success', 'Concession created successfully!');
