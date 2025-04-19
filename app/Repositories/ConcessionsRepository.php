@@ -40,6 +40,39 @@ class ConcessionsRepository implements ConcessionsInterface
         return $this->model->create($data);
     }
 
+    public function deleteConcession(string $id): bool
+    {
+        $concession = $this->model->findOrFail($id);
+
+        // Delete associated image if exists
+        if ($concession->image_path) {
+            Storage::disk('public')->delete($concession->image_path);
+        }
+
+        return $concession->delete();
+    }
+
+    public function updateConcession(string $id, array $data, ?UploadedFile $image = null): Concession
+    {
+        $concession = $this->model->findOrFail($id);
+
+        if ($image) {
+            // Delete old image if exists
+            if ($concession->image_path) {
+                Storage::disk('public')->delete($concession->image_path);
+            }
+
+            // Process and store new image
+            $data['image_path'] = $this->processAndStoreImage($image);
+        }else{
+            $data['image_path'] = $concession->image_path;
+        }
+
+        $concession->update($data);
+
+        return $concession;
+    }
+
     protected function processAndStoreImage(UploadedFile $image): string
     {
         // Initialize ImageManager with driver

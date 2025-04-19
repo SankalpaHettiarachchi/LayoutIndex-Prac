@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreConcessionRequest;
+use App\Http\Requests\UpdateConcessionRequest;
 use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use Illuminate\Http\Request;
@@ -61,15 +62,25 @@ class ConcessionsController extends Controller
      */
     public function edit(Concession $concession)
     {
-        //
+        return Inertia::render('Concessions/editConcession', [
+            'concession' => $concession,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Concession $concession)
+    public function update(UpdateConcessionRequest $request, Concession $concession)
     {
-        //
+        $validated = $request->validated();
+        $this->concessionRepository->updateConcession(
+            $concession->id,
+            $validated,
+            $request->file('image_path')
+        );
+
+        return redirect()->route('concessions.index')
+            ->with('success', 'Concession updated successfully!');
     }
 
     /**
@@ -77,6 +88,9 @@ class ConcessionsController extends Controller
      */
     public function destroy(Concession $concession)
     {
-        //
+        $this->concessionRepository->deleteConcession($concession->id);
+
+        return redirect()->route('concessions.index')
+            ->with('success', 'Concession deleted successfully');
     }
 }

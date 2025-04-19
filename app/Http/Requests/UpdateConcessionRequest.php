@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreConcessionRequest extends FormRequest
+class UpdateConcessionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class StoreConcessionRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif',
+            'image_path' => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ];
     }
 }
