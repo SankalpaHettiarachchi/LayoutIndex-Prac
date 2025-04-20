@@ -10,15 +10,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Order extends Model
 {
     use HasFactory;
+    protected $table = 'order';
 
     protected $fillable = [
+        'order_id',
         'send_to_kitchen_at',
         'status',
-        'created_by'
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
-        'id' => 'string', // For UUID
+        'id' => 'string',
         'send_to_kitchen_at' => 'datetime',
         'status' => 'string'
     ];

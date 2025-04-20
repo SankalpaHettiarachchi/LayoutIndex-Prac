@@ -2,7 +2,7 @@ import DataTable from 'react-data-table-component';
 import { router, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function DataTable({
+export default function CommonDataTable({
       data,
       columns,
       routeName,

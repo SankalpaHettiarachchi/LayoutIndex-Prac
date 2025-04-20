@@ -14,9 +14,11 @@ return new class extends Migration
     {
         Schema::create('order', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(Str::uuid());
+            $table->string('order_id')->unique();
             $table->datetime('send_to_kitchen_at')->nullable();
             $table->enum('status', ['pending', 'in-progress', 'completed'])->default('pending');
             $table->foreignUuid('created_by')->constrained('users');
+            $table->foreignUuid('updated_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

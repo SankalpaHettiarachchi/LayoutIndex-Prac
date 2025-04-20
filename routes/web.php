@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConcessionsController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::Resource('/concessions', ConcessionsController::class)->middleware(['auth', 'verified'])->names('concessions');
+Route::Resource('/orders', OrdersController::class)->middleware(['auth', 'verified'])->names('orders');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
