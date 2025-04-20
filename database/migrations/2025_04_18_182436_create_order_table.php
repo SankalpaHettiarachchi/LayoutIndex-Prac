@@ -12,14 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('concession', function (Blueprint $table) {
+        Schema::create('order', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(Str::uuid());
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('image_path')->nullable();
-            $table->decimal('price', 10, 2);
+            $table->datetime('send_to_kitchen_at')->nullable();
+            $table->enum('status', ['pending', 'in-progress', 'completed'])->default('pending');
             $table->foreignUuid('created_by')->constrained('users');
-            $table->foreignUuid('updated_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('concession');
+        Schema::dropIfExists('order');
     }
 };

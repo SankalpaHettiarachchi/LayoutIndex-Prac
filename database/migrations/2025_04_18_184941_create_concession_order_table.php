@@ -12,15 +12,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('concession', function (Blueprint $table) {
+        Schema::create('concession_order', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(Str::uuid());
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('image_path')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->foreignUuid('created_by')->constrained('users');
-            $table->foreignUuid('updated_by')->nullable()->constrained('users');
+            $table->foreignUuid('order_id')->constrained('order');
+            $table->foreignUuid('concession_id')->constrained('concession');
+            $table->integer('quantity')->default(1);
+            $table->decimal('unit_price', 10, 2);
             $table->timestamps();
+
+            // Ensure unique combinations
+            $table->unique(['order_id', 'concession_id']);
         });
     }
 
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('concession');
+        Schema::dropIfExists('concession_order');
     }
 };
