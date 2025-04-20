@@ -5,6 +5,26 @@ import DataTable from '@/Components/DataTable';
 export default function Concessions({ concessions, filters }) {
     const columns = [
         {
+            header: 'Image',
+            field: 'image_path',
+            sortable: true,
+            render: (item) => (
+                <div className="flex items-center">
+                    {item.image_path ? (
+                        <div className="mb-2">
+                            <img
+                                src={`/storage/${item.image_path}`}
+                                alt="Concession image"
+                                className="w-16 h-16 object-cover rounded"
+                            />
+                        </div>
+                    ) : (
+                        <span className="text-gray-400">No image</span>
+                    )}
+                </div>
+            )
+        },
+        {
             header: 'Name',
             field: 'name',
             sortable: true

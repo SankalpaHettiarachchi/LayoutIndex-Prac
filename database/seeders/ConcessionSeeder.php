@@ -20,10 +20,6 @@ class ConcessionSeeder extends Seeder
             $this->command->info('Created 5 staff users first');
         }
 
-        // 2. Prepare storage
-        Storage::makeDirectory('public/concessions');
-        $imagePath = $this->storeDefaultImage();
-
         // 3. Create concessions
         $users = User::all();
         $foodTypes = ['Burger', 'Pizza', 'Hot Dog', 'Nachos', 'Popcorn'];
@@ -33,7 +29,7 @@ class ConcessionSeeder extends Seeder
                 'id' => Str::uuid(),
                 'name' => $this->generateFoodName($i, $foodTypes),
                 'description' => "Delicious {$foodTypes[$i % count($foodTypes)]} with special sauce",
-                'image_path' => $imagePath,
+                'image_path' => 'concessions/default.webp',
                 'price' => (float) rand(100, 1000) + (rand(0, 99) / 100),
                 'created_by' => (string)$users->random()->id,
                 'updated_by' => (string)$users->random()->id,

@@ -78,10 +78,14 @@ export default function DataTable({
                             >
                                 <div className="flex items-center">
                                     {column.header}
-                                    {column.sortable && localFilters.sort === column.field && (
-                                        <span className="ml-1">
-                                                {localFilters.direction === 'asc' ? '↑' : '↓'}
-                                            </span>
+                                    {column.sortable && (
+                                        <span className="ml-1 text-black"> {/* Added text-black for visibility */}
+                                            {localFilters.sort === column.field ? (
+                                                localFilters.direction === 'asc' ? '↑' : '↓'
+                                            ) : (
+                                                <span className="text-transparent">↑</span> /* Placeholder */
+                                            )}
+                                        </span>
                                     )}
                                 </div>
                             </th>

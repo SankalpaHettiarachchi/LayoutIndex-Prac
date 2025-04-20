@@ -58,7 +58,7 @@ class ConcessionsRepository implements ConcessionsInterface
 
         if ($image) {
             // Delete old image if exists
-            if ($concession->image_path) {
+            if ($concession->image_path && $concession->image_path !== 'concessions/default.webp') {
                 Storage::disk('public')->delete($concession->image_path);
             }
 
