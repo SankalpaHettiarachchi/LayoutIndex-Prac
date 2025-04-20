@@ -2,43 +2,28 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 
-export default function Concessions({ orders, filters }) {
+export default function Orders({ orders, filters }) {
     const columns = [
         {
-            header: 'Image',
-            field: 'image_path',
-            sortable: true,
-            render: (item) => (
-                <div className="flex items-center">
-                    {item.image_path ? (
-                        <div className="mb-2">
-                            <img
-                                src={`/storage/${item.image_path}`}
-                                alt="Concession image"
-                                className="w-16 h-16 object-cover rounded"
-                            />
-                        </div>
-                    ) : (
-                        <span className="text-gray-400">No image</span>
-                    )}
-                </div>
-            )
-        },
-        {
-            header: 'Name',
-            field: 'name',
+            header: 'Order No',
+            field: 'order_no',
             sortable: true
         },
         {
-            header: 'Description',
-            field: 'description',
+            header: 'Send to Kitchen Time',
+            field: 'send_to_kitchen_at',
             sortable: true
         },
         {
-            header: 'Price',
-            field: 'price',
-            sortable: true,
-            render: (item) => `LKR ${item.price}`
+            header: 'Total',
+            field: 'total',
+            render: (item) => `LKR ${item.total}`,
+            sortable: true
+        },
+        {
+            header: 'Status',
+            field: 'status',
+            sortable: true
         }
     ];
 
@@ -62,7 +47,7 @@ export default function Concessions({ orders, filters }) {
                                 routeName="concessions.index"
                                 filters={filters}
                                 createRoute="orders.create"
-                                viewRoute="concessions.show"
+                                viewRoute="orders.show"
                                 editRoute="concessions.edit"
                                 deleteRoute="concessions.destroy"
                             />

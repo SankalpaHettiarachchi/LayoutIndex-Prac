@@ -18,7 +18,11 @@ class OrdersRepository implements OrdersInterface
 
     public function getAll(array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
-        return $this->model->query()
+        $orders = $this->model->query()
+            ->with(['concessions' => function ($query) {
+                $query->select('concession.*')
+                    ->withPivot(['quantity', 'unit_price']);
+            }])
             ->when($filters['search'] ?? null, function ($query, $search) {
                 $query->where(function($q) use ($search) {
                     $q->where('send_to_kitchen_at', 'like', "%{$search}%")
@@ -30,6 +34,16 @@ class OrdersRepository implements OrdersInterface
                 $filters['direction'] ?? 'asc'
             )
             ->paginate($perPage);
+
+        // Calculate and append totals to each order
+        $orders->getCollection()->transform(function ($order) {
+            $order->total = $order->concessions->sum(function ($concession) {
+                return $concession->pivot->quantity * $concession->pivot->unit_price;
+            });
+            return $order;
+        });
+
+        return $orders;
     }
 
     public function createConcession(array $data, ?UploadedFile $image = null)

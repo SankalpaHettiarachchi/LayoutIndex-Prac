@@ -45,7 +45,7 @@ class ConcessionsRepository implements ConcessionsInterface
         $concession = $this->model->findOrFail($id);
 
         // Delete associated image if exists
-        if ($concession->image_path) {
+        if ($concession->image_path && $concession->image_path !== 'concessions/default.webp') {
             Storage::disk('public')->delete($concession->image_path);
         }
 

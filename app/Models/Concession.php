@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\FormattedDateTimeCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,10 +26,10 @@ class Concession extends Model
     ];
 
     protected $casts = [
-        'id' => 'string',       // UUID as string
-        'price' => 'decimal:2', // Proper decimal handling
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'id' => 'string',
+        'price' => 'decimal:2',
+        'created_at' => FormattedDateTimeCast::class,
+        'updated_at' => FormattedDateTimeCast::class,
     ];
 
     public $incrementing = false;

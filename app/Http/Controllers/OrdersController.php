@@ -60,9 +60,6 @@ class OrdersController extends Controller
 
         // Create the order
         $order = Order::create([
-            'user_id' => auth()->id(),
-            'total_price' => $totalPrice,
-            'status' => 'pending',
             'send_to_kitchen_at' => $validated['send_to_kitchen_at'],
         ]);
 
@@ -84,7 +81,7 @@ class OrdersController extends Controller
      */
     public function show(Order $order)
     {
-        //
+        dd('called');
     }
 
     /**

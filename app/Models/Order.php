@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\FormattedDateTimeCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,7 +24,7 @@ class Order extends Model
 
     protected $casts = [
         'id' => 'string',
-        'send_to_kitchen_at' => 'datetime',
+        'send_to_kitchen_at' => FormattedDateTimeCast::class,
         'status' => 'string'
     ];
 
@@ -41,12 +42,9 @@ class Order extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    // Relationship to concessions
-    public function concessions(): BelongsToMany
+    public function updater(): BelongsTo
     {
-        return $this->belongsToMany(Concession::class, 'concession_order')
-            ->withPivot(['quantity', 'unit_price'])
-            ->withTimestamps();
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     // Helper methods
@@ -54,7 +52,7 @@ class Order extends Model
     {
         $this->update([
             'status' => self::STATUS_IN_PROGRESS,
-            'send_to_kitchen_at' => now()
+//            'send_to_kitchen_at' => now()
         ]);
     }
 
@@ -77,6 +75,21 @@ class Order extends Model
             if (empty($model->id)) {
                 $model->id = Str::uuid()->toString();
             }
+        });
+    }
+
+    // Relationship to concessions
+    public function concessions(): BelongsToMany
+    {
+        return $this->belongsToMany(Concession::class, 'concession_order')
+            ->withPivot(['quantity', 'unit_price'])
+            ->withTimestamps();
+    }
+
+    public function getTotalAttribute()
+    {
+        return $this->concessions->sum(function ($concession) {
+            return $concession->pivot->quantity * $concession->pivot->unit_price;
         });
     }
 }
