@@ -62,6 +62,7 @@ export default function Concessions({ concessions, filters }) {
                                 routeName="concessions.index"
                                 filters={filters}
                                 createRoute="concessions.create"
+                                viewRoute="concessions.show"
                                 editRoute="concessions.edit"
                                 deleteRoute="concessions.destroy"
                             />

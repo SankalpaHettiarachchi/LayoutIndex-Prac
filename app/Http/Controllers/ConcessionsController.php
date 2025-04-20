@@ -20,7 +20,7 @@ class ConcessionsController extends Controller
         $filters = $request->only(['search', 'per_page', 'sort', 'direction']);
 
         return Inertia::render('Concessions/Index', [
-            'concessions' => $this->concessionRepository->getAll($filters, $filters['per_page'] ?? 10),
+            'concessions' => $this->concessionRepository->getAll($filters, $filters['per_page'] ?? 5),
             'filters' => $filters
         ]);
     }
@@ -54,7 +54,22 @@ class ConcessionsController extends Controller
      */
     public function show(Concession $concession)
     {
-        //
+        // Load the relationships
+        $concession->load(['creator', 'updater']);
+
+        return Inertia::render('Concessions/viewConcession', [
+            'concession' => [
+                'id' => $concession->id,
+                'name' => $concession->name,
+                'description' => $concession->description,
+                'price' => $concession->price,
+                'image_path' => $concession->image_path,
+                'created_at' => $concession->created_at->format('M d, Y h:i A'),
+                'updated_at' => $concession->updated_at->format('M d, Y h:i A'),
+                'created_by' => $concession->creator ? $concession->creator->name : null,
+                'updated_by' => $concession->updater ? $concession->updater->name : null,
+            ],
+        ]);
     }
 
     /**

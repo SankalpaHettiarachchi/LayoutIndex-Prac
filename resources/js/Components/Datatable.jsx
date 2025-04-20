@@ -9,12 +9,13 @@ export default function DataTable({
       withActions = true,
       editRoute = null,
       createRoute = null,
+      viewRoute = null,
       deleteRoute = null,
       onDelete = null
   }) {
     const [localFilters, setLocalFilters] = useState({
         search: filters.search || '',
-        per_page: filters.per_page || 10,
+        per_page: filters.per_page || 5,
         sort: filters.sort || columns[0].field,
         direction: filters.direction || 'asc'
     });
@@ -49,11 +50,11 @@ export default function DataTable({
                 </div>
                 <select
                     value={localFilters.per_page}
-                    onChange={(e) => updateFilters({ per_page: e.target.value })}
+                    onChange={(e) => updateFilters({per_page: e.target.value})}
                     className="px-4 py-2 border rounded-lg"
                 >
+                    <option value="5">5 per page</option>
                     <option value="10">10 per page</option>
-                    <option value="25">25 per page</option>
                     <option value="50">50 per page</option>
                     <option value="100">100 per page</option>
                 </select>
@@ -110,10 +111,18 @@ export default function DataTable({
                                 ))}
                                 {withActions && (
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                        {viewRoute && (
+                                            <a
+                                                href={route(viewRoute, item.id)}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                View
+                                            </a>
+                                        )}
                                         {editRoute && (
                                             <a
                                                 href={route(editRoute, item.id)}
-                                                className="text-indigo-600 hover:text-indigo-900"
+                                                className="text-green-600 hover:text-green-900"
                                             >
                                                 Edit
                                             </a>

@@ -70,17 +70,17 @@ export default function editConcession({ auth, concession }) {
                                         Price
                                     </label>
                                     <div className="relative mt-1 rounded-md shadow-sm">
-                                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                            <span className="text-gray-500 sm:text-sm">$</span>
+                                        <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                                            <span className="text-gray-500 sm:text-sm">LKR</span>
                                         </div>
                                         <input
                                             id="price"
                                             type="number"
-                                            step="0.01"
+                                            step="1"
                                             min="0"
                                             value={data.price}
                                             onChange={(e) => setData('price', e.target.value)}
-                                            className="block w-full pl-7 pr-12 border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500"
+                                            className="block w-full pl-10 pr-12 border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500"
                                             placeholder="0.00"
                                         />
                                     </div>
