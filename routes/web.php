@@ -23,6 +23,10 @@ Route::get('/dashboard', function () {
 Route::Resource('/concessions', ConcessionsController::class)->middleware(['auth', 'verified'])->names('concessions');
 Route::Resource('/orders', OrdersController::class)->middleware(['auth', 'verified'])->names('orders');
 
+// routes/web.php
+Route::get('/orders/create/load-concessions', [OrdersController::class, 'loadConcessions'])
+    ->name('orders.load-concessions');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -12,9 +12,7 @@ class OrderObserver
      */
     public function creating(Order $order): void
     {
-        $latest = Order::latest()->first();
-        $nextId = $latest ? $latest->id + 1 : 1;
-        $order->order_number = 'ORD-' . str_pad($nextId, 7, '0', STR_PAD_LEFT);
+        $order->order_no = $this->generateOrderNumber();
 
         if (Auth::check()) {
             $order->created_by = Auth::id();
@@ -53,5 +51,22 @@ class OrderObserver
     public function forceDeleted(Order $order): void
     {
         //
+    }
+
+    protected function generateOrderNumber(): string
+    {
+        $latestOrder = Order::query()
+            ->whereNotNull('order_no')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $nextNumber = 1; // Default starting number
+
+        if ($latestOrder) {
+            $lastNumber = (int) substr($latestOrder->order_no, 4);
+            $nextNumber = $lastNumber + 1;
+        }
+
+        return 'ORD-' . str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
     }
 }

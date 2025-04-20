@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Str;
 
 class ConcessionOrder extends Pivot
 {
@@ -14,7 +15,7 @@ class ConcessionOrder extends Pivot
         'unit_price' => 'decimal:2',
     ];
 
-    public $incrementing = true;
+    public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -28,5 +29,16 @@ class ConcessionOrder extends Pivot
     public function getTotalAttribute()
     {
         return $this->quantity * $this->unit_price;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid()->toString();
+            }
+        });
     }
 }

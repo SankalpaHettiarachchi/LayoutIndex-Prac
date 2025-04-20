@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -13,7 +14,7 @@ class Order extends Model
     protected $table = 'order';
 
     protected $fillable = [
-        'order_id',
+        'order_no',
         'send_to_kitchen_at',
         'status',
         'created_by',
@@ -26,7 +27,7 @@ class Order extends Model
         'status' => 'string'
     ];
 
-    public $incrementing = true;
+    public $incrementing = false;
     protected $keyType = 'string';
 
     // Status constants
@@ -66,5 +67,16 @@ class Order extends Model
     public function scopePending($query)
     {
         return $query->where('status', self::STATUS_PENDING);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid()->toString();
+            }
+        });
     }
 }
