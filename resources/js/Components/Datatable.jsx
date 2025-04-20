@@ -1,3 +1,4 @@
+import DataTable from 'react-data-table-component';
 import { router, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -12,7 +13,7 @@ export default function DataTable({
       viewRoute = null,
       deleteRoute = null,
       onDelete = null
-  }) {
+}) {
     const [localFilters, setLocalFilters] = useState({
         search: filters.search || '',
         per_page: filters.per_page || 5,
@@ -28,165 +29,166 @@ export default function DataTable({
         );
     };
 
-    const handleSort = (field) => {
-        const direction = localFilters.sort === field && localFilters.direction === 'asc'
-            ? 'desc'
-            : 'asc';
-        updateFilters({ sort: field, direction });
+    const handleSort = (column, sortDirection) => {
+        updateFilters({
+            sort: column.selector || column.field,
+            direction: sortDirection
+        });
     };
+
+    // Transform columns for react-data-table-component
+    const transformedColumns = [
+        ...columns.map(column => ({
+            name: column.header,
+            selector: row => column.field ? row[column.field] : null,
+            sortable: column.sortable || false,
+            cell: row => column.render ? column.render(row) : (column.field ? row[column.field] : null),
+            grow: column.grow || 1, // Allow columns to grow as needed
+        })),
+        ...(withActions ? [{
+            name: 'Actions',
+            cell: row => (
+                <div className="flex flex-wrap gap-2 justify-start">
+                    {viewRoute && (
+                        <Link
+                            href={route(viewRoute, row.id)}
+                            className="text-indigo-600 hover:text-indigo-900 whitespace-nowrap"
+                        >
+                            View
+                        </Link>
+                    )}
+                    {editRoute && (
+                        <Link
+                            href={route(editRoute, row.id)}
+                            className="text-green-600 hover:text-green-900 whitespace-nowrap"
+                        >
+                            Edit
+                        </Link>
+                    )}
+                    {deleteRoute && (
+                        <button
+                            onClick={() => {
+                                if (confirm('Are you sure?')) {
+                                    router.delete(route(deleteRoute, row.id));
+                                }
+                            }}
+                            className="text-red-600 hover:text-red-900 whitespace-nowrap"
+                        >
+                            Delete
+                        </button>
+                    )}
+                    {onDelete && (
+                        <button
+                            onClick={() => onDelete(row)}
+                            className="text-red-600 hover:text-red-900 whitespace-nowrap"
+                        >
+                            Delete
+                        </button>
+                    )}
+                </div>
+            ),
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true,
+            minWidth: '150px', // Minimum width for actions column
+            grow: 0, // Don't grow this column
+            right: true, // Align to right
+        }] : [])
+    ];
 
     return (
         <div className="space-y-4">
-            {/* Search and Per Page Controls */}
-            <div className="flex justify-between">
-                <div className="relative w-64">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={localFilters.search}
-                        onChange={(e) => updateFilters({ search: e.target.value })}
-                        className="w-full px-4 py-2 border rounded-lg"
-                    />
-                </div>
-                <select
-                    value={localFilters.per_page}
-                    onChange={(e) => updateFilters({per_page: e.target.value})}
-                    className="px-4 py-2 border rounded-lg"
-                >
-                    <option value="5">5 per page</option>
-                    <option value="10">10 per page</option>
-                    <option value="50">50 per page</option>
-                    <option value="100">100 per page</option>
-                </select>
-                <Link
-                    href={route(createRoute)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2"
-                >
-                    Create New
-                </Link>
-            </div>
-
-            {/* Table */}
-            <div className="overflow-x-auto bg-white rounded-lg shadow">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                    <tr>
-                        {columns.map((column) => (
-                            <th
-                                key={column.field}
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                onClick={() => column.sortable && handleSort(column.field)}
-                            >
-                                <div className="flex items-center">
-                                    {column.header}
-                                    {column.sortable && (
-                                        <span className="ml-1 text-black"> {/* Added text-black for visibility */}
-                                            {localFilters.sort === column.field ? (
-                                                localFilters.direction === 'asc' ? '↑' : '↓'
-                                            ) : (
-                                                <span className="text-transparent">↑</span> /* Placeholder */
-                                            )}
-                                        </span>
-                                    )}
-                                </div>
-                            </th>
-                        ))}
-                        {withActions && (
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                            </th>
-                        )}
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {data.data.length > 0 ? (
-                        data.data.map((item) => (
-                            <tr key={item.id}>
-                                {columns.map((column) => (
-                                    <td key={`${item.id}-${column.field}`} className="px-6 py-4 whitespace-nowrap">
-                                        {column.render
-                                            ? column.render(item)
-                                            : item[column.field]}
-                                    </td>
-                                ))}
-                                {withActions && (
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                        {viewRoute && (
-                                            <a
-                                                href={route(viewRoute, item.id)}
-                                                className="text-indigo-600 hover:text-indigo-900"
-                                            >
-                                                View
-                                            </a>
-                                        )}
-                                        {editRoute && (
-                                            <a
-                                                href={route(editRoute, item.id)}
-                                                className="text-green-600 hover:text-green-900"
-                                            >
-                                                Edit
-                                            </a>
-                                        )}
-                                        {deleteRoute && (
-                                            <button
-                                                onClick={() => {
-                                                    if (confirm('Are you sure?')) {
-                                                        router.delete(route(deleteRoute, item.id));
-                                                    }
-                                                }}
-                                                className="text-red-600 hover:text-red-900"
-                                            >
-                                                Delete
-                                            </button>
-                                        )}
-                                        {onDelete && (
-                                            <button
-                                                onClick={() => onDelete(item)}
-                                                className="text-red-600 hover:text-red-900"
-                                            >
-                                                Delete
-                                            </button>
-                                        )}
-                                    </td>
-                                )}
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td
-                                colSpan={columns.length + (withActions ? 1 : 0)}
-                                className="px-6 py-4 text-center text-gray-500"
-                            >
-                                No records found
-                            </td>
-                        </tr>
-                    )}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Pagination */}
-            {data.total > 0 && (
-                <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-700">
-                        Showing {data.from} to {data.to} of {data.total} entries
+            <div className="flex flex-col sm:flex-row items-end gap-4 mb-4">
+                {/* Search and Per Page controls - will grow to fill space */}
+                <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-4 flex-1">
+                    {/* Search Input with Inline Label */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <label htmlFor="search-input" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                            Search:
+                        </label>
+                        <input
+                            id="search-input"
+                            type="text"
+                            placeholder="Type to search..."
+                            value={localFilters.search}
+                            onChange={(e) => updateFilters({search: e.target.value})}
+                            className="px-4 py-2 border rounded-lg flex-1 min-w-0"
+                        />
                     </div>
-                    <div className="flex space-x-1">
-                        {data.links.map((link, index) => (
-                            <button
-                                key={index}
-                                onClick={() => {
-                                    if (link.url) {
-                                        router.get(link.url, localFilters, { preserveState: true });
-                                    }
-                                }}
-                                className={`px-3 py-1 rounded ${link.active ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
-                        ))}
+
+                    {/* Per Page Selector with Inline Label */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <label htmlFor="per-page-select"
+                               className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                            Show:
+                        </label>
+                        <select
+                            id="per-page-select"
+                            value={localFilters.per_page}
+                            onChange={(e) => updateFilters({per_page: e.target.value})}
+                            className="px-4 py-2 border rounded-lg"
+                        >
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
                     </div>
                 </div>
-            )}
+
+                {/* Create New Button - forced to end */}
+                {createRoute && (
+                    <div className="w-full sm:w-auto">
+                        <Link
+                            href={route(createRoute)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap w-full sm:w-auto text-center block"
+                        >
+                            Create New
+                        </Link>
+                    </div>
+                )}
+            </div>
+
+            <DataTable
+                columns={transformedColumns}
+                data={data.data}
+                defaultSortFieldId={localFilters.sort}
+                defaultSortAsc={localFilters.direction === 'asc'}
+                onSort={handleSort}
+                noDataComponent={
+                    <div className="py-4 text-center text-gray-500">
+                        No records found
+                    </div>
+                }
+                className="border rounded-lg overflow-hidden"
+                pagination
+                paginationServer
+                paginationTotalRows={data.total}
+                paginationPerPage={localFilters.per_page}
+                paginationComponentOptions={{noRowsPerPage: true}}
+                paginationComponent={() => (
+                    <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4 px-4">
+                        <div className="text-sm text-gray-700 whitespace-nowrap">
+                            Showing {data.from} to {data.to} of {data.total} entries
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-1">
+                            {data.links.map((link, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => {
+                                        if (link.url) {
+                                            const page = new URL(link.url).searchParams.get('page');
+                                            updateFilters({page});
+                                        }
+                                    }}
+                                    className={`px-3 py-1 rounded text-sm ${link.active ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'} min-w-[2rem]`}
+                                    dangerouslySetInnerHTML={{__html: link.label}}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+            />
         </div>
     );
 }

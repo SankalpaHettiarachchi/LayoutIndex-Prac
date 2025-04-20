@@ -38,7 +38,7 @@ export default function Concessions({ concessions, filters }) {
             header: 'Price',
             field: 'price',
             sortable: true,
-            render: (item) => `$${item.price}`
+            render: (item) => `LKR ${item.price}`
         }
     ];
 
