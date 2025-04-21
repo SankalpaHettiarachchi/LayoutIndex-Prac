@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->foreignUuid('created_by')->constrained('users');
             $table->foreignUuid('updated_by')->nullable()->constrained('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

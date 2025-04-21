@@ -6,10 +6,12 @@ use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+
 
 class ConcessionsRepository implements ConcessionsInterface
 {
@@ -48,7 +50,6 @@ class ConcessionsRepository implements ConcessionsInterface
         if ($concession->image_path && $concession->image_path !== 'concessions/default.webp') {
             Storage::disk('public')->delete($concession->image_path);
         }
-
         return $concession->delete();
     }
 

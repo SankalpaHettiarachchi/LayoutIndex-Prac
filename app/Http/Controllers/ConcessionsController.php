@@ -112,6 +112,7 @@ class ConcessionsController extends Controller
             event(new NotificationEvent('Concession deleted successfully!', 'success'));
 
         } catch (\Exception $e) {
+            dd($e->getMessage());
             event(new NotificationEvent('Failed to delete concession: ' . $e->getMessage(), 'error'));
 
             return back()->withInput();
