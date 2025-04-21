@@ -12,4 +12,8 @@ interface ConcessionsInterface
     public function createConcession(array $data,?UploadedFile $image = null);
     public function deleteConcession(string $id): bool;
     public function updateConcession(string $id, array $data, ?UploadedFile $image = null): Concession;
+    public function getConcessions(
+        ?string $search = null,
+        int $perPage = 5
+    ): LengthAwarePaginator;
 }

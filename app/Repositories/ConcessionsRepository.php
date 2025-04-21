@@ -6,15 +6,16 @@ use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
+
 class ConcessionsRepository implements ConcessionsInterface
 {
     public function __construct(protected Concession $model) {}
-
     public function getAll(array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
         return $this->model->query()
@@ -30,7 +31,6 @@ class ConcessionsRepository implements ConcessionsInterface
             )
             ->paginate($perPage);
     }
-
     public function createConcession(array $data, ?UploadedFile $image = null)
     {
         if ($image) {
@@ -39,19 +39,24 @@ class ConcessionsRepository implements ConcessionsInterface
 
         return $this->model->create($data);
     }
-
     public function deleteConcession(string $id): bool
     {
         $concession = $this->model->findOrFail($id);
 
         // Delete associated image if exists
-        if ($concession->image_path) {
+        if ($concession->image_path && $concession->image_path !== 'concessions/default.webp') {
             Storage::disk('public')->delete($concession->image_path);
         }
-
         return $concession->delete();
     }
-
+    public function getConcessions(?string $search = null,int $perPage = 5): LengthAwarePaginator
+    {
+        return $this->model->query()
+            ->when($search, function($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->paginate($perPage);
+    }
     public function updateConcession(string $id, array $data, ?UploadedFile $image = null): Concession
     {
         $concession = $this->model->findOrFail($id);
@@ -72,7 +77,6 @@ class ConcessionsRepository implements ConcessionsInterface
 
         return $concession;
     }
-
     protected function processAndStoreImage(UploadedFile $image): string
     {
         // Initialize ImageManager with driver

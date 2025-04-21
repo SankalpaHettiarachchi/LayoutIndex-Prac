@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
 
-export default function editConcession({ auth, concession }) {
+export default function editOrder({ auth, concession }) {
     const { data, setData, post, processing, errors } = useForm({
         name: concession.name,
         description: concession.description,
@@ -76,7 +76,7 @@ export default function editConcession({ auth, concession }) {
                                         <input
                                             id="price"
                                             type="number"
-                                            step="0.01"
+                                            step="1"
                                             min="0"
                                             value={data.price}
                                             onChange={(e) => setData('price', e.target.value)}
@@ -117,7 +117,7 @@ export default function editConcession({ auth, concession }) {
                                         href={route('concessions.index')}
                                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     >
-                                        Back to List
+                                        Cancel
                                     </Link>
                                     <button
                                         type="submit"

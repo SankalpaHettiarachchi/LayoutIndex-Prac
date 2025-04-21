@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ConcessionsController;
+use App\Http\Controllers\KitchenController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +22,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::Resource('/concessions', ConcessionsController::class)->middleware(['auth', 'verified'])->names('concessions');
+Route::Resource('/orders', OrdersController::class)->middleware(['auth', 'verified'])->names('orders');
+Route::get('/orders/create/load-concessions', [OrdersController::class, 'loadConcessions'])->name('orders.load-concessions');
+Route::post('/orders/{order}/send', [OrdersController::class, 'send'])->name('orders.send');
+Route::Resource('/kitchen', KitchenController::class)->middleware(['auth', 'verified'])->names('kitchen');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use App\Casts\FormattedDateTimeCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Concession extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $table = 'concession'; // Explicit table name
 
@@ -25,10 +27,10 @@ class Concession extends Model
     ];
 
     protected $casts = [
-        'id' => 'string',       // UUID as string
-        'price' => 'decimal:2', // Proper decimal handling
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'id' => 'string',
+        'price' => 'decimal:2',
+        'created_at' => FormattedDateTimeCast::class,
+        'updated_at' => FormattedDateTimeCast::class,
     ];
 
     public $incrementing = false;
