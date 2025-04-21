@@ -1,5 +1,6 @@
+// Index page
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 
 export default function Concessions({ concessions, filters }) {
@@ -39,6 +40,38 @@ export default function Concessions({ concessions, filters }) {
             field: 'price',
             sortable: true,
             render: (item) => `LKR ${item.price}`
+        },
+        {
+            header: 'Actions',
+            sortable: false,
+            render: (item) => (
+                <div className="flex flex-wrap gap-2 justify-start">
+                    <Link
+                        href={route('concessions.show', item.id)}
+                        className="text-indigo-600 hover:text-indigo-900 whitespace-nowrap"
+                    >
+                        View
+                    </Link>
+                    <Link
+                        href={route('concessions.edit', item.id)}
+                        className="text-green-600 hover:text-green-900 whitespace-nowrap"
+                    >
+                        Edit
+                    </Link>
+                    <button
+                        onClick={() => {
+                            if (confirm('Are you sure you want to delete this concession?')) {
+                                router.delete(route('concessions.destroy', item.id));
+                            }
+                        }}
+                        className="text-red-600 hover:text-red-900 whitespace-nowrap"
+                    >
+                        Delete
+                    </button>
+                </div>
+            ),
+            grow: 0,
+            minWidth: '150px'
         }
     ];
 
@@ -62,9 +95,6 @@ export default function Concessions({ concessions, filters }) {
                                 routeName="concessions.index"
                                 filters={filters}
                                 createRoute="concessions.create"
-                                viewRoute="concessions.show"
-                                editRoute="concessions.edit"
-                                deleteRoute="concessions.destroy"
                             />
                         </div>
                     </div>

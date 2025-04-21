@@ -52,6 +52,15 @@ class ConcessionsRepository implements ConcessionsInterface
         return $concession->delete();
     }
 
+    public function getConcessions(?string $search = null,int $perPage = 5): LengthAwarePaginator
+    {
+        return $this->model->query()
+            ->when($search, function($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->paginate($perPage);
+    }
+
     public function updateConcession(string $id, array $data, ?UploadedFile $image = null): Concession
     {
         $concession = $this->model->findOrFail($id);

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\OrdersInterface;
 use App\Models\Concession;
+use App\Models\ConcessionOrder;
 use App\Models\Order;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
@@ -46,16 +47,40 @@ class OrdersRepository implements OrdersInterface
         return $orders;
     }
 
-    public function createConcession(array $data, ?UploadedFile $image = null)
+    public function createOrder(array $orderData, array $concessions): Order
     {
-        if ($image) {
-            $data['image_path'] = $this->processAndStoreImage($image);
+        // Create the order (same as original)
+        $order = Order::create([
+            'send_to_kitchen_at' => $orderData['send_to_kitchen_at'],
+        ]);
+
+        // Create concession orders one by one (same as original)
+        foreach ($concessions as $concession) {
+            ConcessionOrder::create([
+                'order_id' => $order->id,
+                'concession_id' => $concession['id'],
+                'quantity' => $concession['quantity'],
+                'unit_price' => $concession['price']
+            ]);
         }
 
-        return $this->model->create($data);
+        return $order;
     }
 
-    public function deleteConcession(string $id): bool
+    public function getOrder(string $id): Order
+    {
+        return $this->model->with([
+            'concessions' => function ($query) {
+                $query->select('concession.*')
+                    ->withPivot(['quantity', 'unit_price']);
+            },
+            'creator',
+            'updater'
+        ])
+            ->findOrFail($id);
+    }
+
+    public function deleteOrder(string $id): bool
     {
         $concession = $this->model->findOrFail($id);
 
@@ -65,50 +90,5 @@ class OrdersRepository implements OrdersInterface
         }
 
         return $concession->delete();
-    }
-
-    public function updateConcession(string $id, array $data, ?UploadedFile $image = null): Concession
-    {
-        $concession = $this->model->findOrFail($id);
-
-        if ($image) {
-            // Delete old image if exists
-            if ($concession->image_path && $concession->image_path !== 'concessions/default.webp') {
-                Storage::disk('public')->delete($concession->image_path);
-            }
-
-            // Process and store new image
-            $data['image_path'] = $this->processAndStoreImage($image);
-        }else{
-            $data['image_path'] = $concession->image_path;
-        }
-
-        $concession->update($data);
-
-        return $concession;
-    }
-
-    protected function processAndStoreImage(UploadedFile $image): string
-    {
-        // Initialize ImageManager with driver
-        $manager = new ImageManager(new Driver());
-
-        // Read the uploaded file
-        $img = $manager->read($image->getRealPath());
-
-        // Resize with aspect ratio preservation
-        $img->resize(800, 600, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
-
-        // Generate unique filename and path
-        $filename = 'concession_'.Str::uuid().'.webp';
-        $path = 'concessions/'.$filename;
-
-        // Store in public disk as WebP
-        Storage::disk('public')->put($path, $img->toWebp(80));
-
-        return $path;
     }
 }

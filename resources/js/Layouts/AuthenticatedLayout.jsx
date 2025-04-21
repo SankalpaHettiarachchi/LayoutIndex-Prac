@@ -11,22 +11,6 @@ export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    useEffect(() => {
-        const channel = window.Echo.channel("OrderChannel")
-            .listen(".Create", (event) => {
-                console.log("Event received:", event);
-
-                const order = event.order;
-                const message = event.message;
-
-                toast.success(`${message}: ${order.order_no}`);
-            });
-
-        return () => {
-            window.Echo.leave("OrderChannel");
-        };
-    }, []);
-
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="border-b border-gray-100 bg-white">
@@ -57,6 +41,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     active={route().current('orders.index')}
                                 >
                                     Orders
+                                </NavLink>
+                                <NavLink
+                                    href={route('kitchen.index')}
+                                    active={route().current('kitchen.index')}
+                                >
+                                    Kitchen
                                 </NavLink>
                             </div>
                         </div>
@@ -149,6 +139,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('orders.index')}
                         >
                             Orders
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('kitchen.index')}
+                            active={route().current('kitchen.index')}
+                        >
+                            Kitchen
                         </ResponsiveNavLink>
                     </div>
 

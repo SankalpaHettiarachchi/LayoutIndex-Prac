@@ -1,8 +1,51 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function Orders({ orders, filters }) {
+    useEffect(() => {
+        const channel = window.Echo.channel("OrderChannel")
+            .listen(".Create", (event) => {
+                console.log("Event received:", event);
+                const order = event.order;
+                const message = event.message;
+                toast.success(`Sent to kitchen: ${order.order_no}`);
+            });
+
+        return () => {
+            window.Echo.leave("OrderChannel");
+        };
+    }, []);
+
+    const sendOrder = (orderId) => {
+        router.post(route('orders.send', { order: orderId }), {}, {
+            onSuccess: () => {
+                // toast.success('Order sent to kitchen successfully');
+                router.reload();
+            },
+            onError: (errors) => {
+                toast.error('Failed to send order to kitchen');
+                console.error('Error sending order:', errors);
+            }
+        });
+    };
+
+    const deleteOrder = (orderId) => {
+        if (confirm('Are you sure you want to delete this order?')) {
+            router.delete(route('orders.destroy', orderId), {
+                onSuccess: () => {
+                    // toast.success('Order deleted successfully');
+                    router.reload();
+                },
+                onError: () => {
+                    toast.error('Failed to delete order');
+                }
+            });
+        }
+    };
+
     const columns = [
         {
             header: 'Order No',
@@ -12,7 +55,8 @@ export default function Orders({ orders, filters }) {
         {
             header: 'Send to Kitchen Time',
             field: 'send_to_kitchen_at',
-            sortable: true
+            sortable: true,
+            render: (item) => item.send_to_kitchen_at || 'Not sent yet'
         },
         {
             header: 'Total',
@@ -24,6 +68,34 @@ export default function Orders({ orders, filters }) {
             header: 'Status',
             field: 'status',
             sortable: true
+        },
+        {
+            header: 'Actions',
+            sortable: false,
+            render: (item) => (
+                <div className="flex flex-wrap gap-2 justify-start">
+                    <Link
+                        href={route('orders.show', item.id)}
+                        className="text-indigo-600 hover:text-indigo-900 whitespace-nowrap"
+                    >
+                        View
+                    </Link>
+                    <button
+                        onClick={() => sendOrder(item.id)}
+                        className="text-green-600 hover:text-green-900 whitespace-nowrap"
+                    >
+                        Send to Kitchen
+                    </button>
+                    <button
+                        onClick={() => deleteOrder(item.id)}
+                        className="text-red-600 hover:text-red-900 whitespace-nowrap"
+                    >
+                        Delete
+                    </button>
+                </div>
+            ),
+            grow: 0,
+            minWidth: '250px'
         }
     ];
 
@@ -35,7 +107,7 @@ export default function Orders({ orders, filters }) {
                 </h2>
             }
         >
-            <Head title="Concessions" />
+            <Head title="Orders" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -44,12 +116,9 @@ export default function Orders({ orders, filters }) {
                             <DataTable
                                 data={orders}
                                 columns={columns}
-                                routeName="concessions.index"
+                                routeName="orders.index"
                                 filters={filters}
                                 createRoute="orders.create"
-                                viewRoute="orders.show"
-                                editRoute="concessions.edit"
-                                deleteRoute="concessions.destroy"
                             />
                         </div>
                     </div>

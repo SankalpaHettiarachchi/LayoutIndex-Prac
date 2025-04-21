@@ -7,12 +7,7 @@ export default function CommonDataTable({
       columns,
       routeName,
       filters = {},
-      withActions = true,
-      editRoute = null,
-      createRoute = null,
-      viewRoute = null,
-      deleteRoute = null,
-      onDelete = null
+      createRoute = null
 }) {
     const [localFilters, setLocalFilters] = useState({
         search: filters.search || '',
@@ -45,55 +40,6 @@ export default function CommonDataTable({
             cell: row => column.render ? column.render(row) : (column.field ? row[column.field] : null),
             grow: column.grow || 1, // Allow columns to grow as needed
         })),
-        ...(withActions ? [{
-            name: 'Actions',
-            cell: row => (
-                <div className="flex flex-wrap gap-2 justify-start">
-                    {viewRoute && (
-                        <Link
-                            href={route(viewRoute, row.id)}
-                            className="text-indigo-600 hover:text-indigo-900 whitespace-nowrap"
-                        >
-                            View
-                        </Link>
-                    )}
-                    {editRoute && (
-                        <Link
-                            href={route(editRoute, row.id)}
-                            className="text-green-600 hover:text-green-900 whitespace-nowrap"
-                        >
-                            Edit
-                        </Link>
-                    )}
-                    {deleteRoute && (
-                        <button
-                            onClick={() => {
-                                if (confirm('Are you sure?')) {
-                                    router.delete(route(deleteRoute, row.id));
-                                }
-                            }}
-                            className="text-red-600 hover:text-red-900 whitespace-nowrap"
-                        >
-                            Delete
-                        </button>
-                    )}
-                    {onDelete && (
-                        <button
-                            onClick={() => onDelete(row)}
-                            className="text-red-600 hover:text-red-900 whitespace-nowrap"
-                        >
-                            Delete
-                        </button>
-                    )}
-                </div>
-            ),
-            ignoreRowClick: true,
-            allowOverflow: true,
-            button: true,
-            minWidth: '150px', // Minimum width for actions column
-            grow: 0, // Don't grow this column
-            right: true, // Align to right
-        }] : [])
     ];
 
     return (

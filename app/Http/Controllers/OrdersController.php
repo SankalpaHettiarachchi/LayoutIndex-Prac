@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderReceivedEvent;
+use App\Http\Requests\StoreOrderRequest;
 use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use App\Models\ConcessionOrder;
@@ -15,7 +16,8 @@ use Inertia\Inertia;
 class OrdersController extends Controller
 {
     public function __construct(
-        protected OrdersRepository $orderRepository
+        protected OrdersRepository $orderRepository,
+        protected ConcessionsInterface $concessionsInterface
     ) {}
 
     public function index(Request $request)
@@ -28,95 +30,34 @@ class OrdersController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $concessions = Concession::query()
-            ->paginate(10); // Adjust pagination as needed
-
-        return Inertia::render('Orders/createOrder', [
-            'concessions' => $concessions,
-        ]);
+        return Inertia::render('Orders/createOrder');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function store(StoreOrderRequest $request)
     {
-        $validated = $request->validate([
-            'send_to_kitchen_at' => ['required', 'date'],
-            'concessions' => ['required', 'array', 'min:1'],
-            'concessions.*.id' => ['required', 'exists:concession,id'],
-            'concessions.*.quantity' => ['required', 'integer', 'min:1'],
-            'concessions.*.price' => ['required', 'numeric', 'min:0'],
-        ]);
+        $validated = $request->validated();
 
-        // Calculate total price
-        $totalPrice = collect($validated['concessions'])->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
+        $order = $this->orderRepository->createOrder(
+            $validated,
+            $validated['concessions']
+        );
 
-        // Create the order
-        $order = Order::create([
-            'send_to_kitchen_at' => $validated['send_to_kitchen_at'],
-        ]);
-
-        // Create concession orders using create method
-        foreach ($validated['concessions'] as $concession) {
-            ConcessionOrder::create([
-                'order_id' => $order->id,
-                'concession_id' => $concession['id'],
-                'quantity' => $concession['quantity'],
-                'unit_price' => $concession['price']
-            ]);
-        }
-
-        return redirect()->route('orders.index')->with('success', 'Order created successfully');
+        return redirect()->route('orders.index')
+            ->with('success', 'Order created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Order $order)
     {
-        // Eager load concessions with pivot data and creator/updater
-        $order->load([
-            'concessions' => function ($query) {
-                $query->select('concession.*')
-                    ->withPivot(['quantity', 'unit_price']);
-            },
-            'creator',
-            'updater'
-        ]);
+        $orderWithDetails = $this->orderRepository->getOrder($order->id);
 
         return inertia('Orders/viewOrder', [
-            'order' => $order,
-            // Include any other needed data
+            'order' => $orderWithDetails,
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Order $order)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Order $order)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Order $order)
     {
         //
@@ -124,16 +65,29 @@ class OrdersController extends Controller
 
     public function loadConcessions()
     {
-        $perPage = request('per_page', 5); // Default to 5 items per page
+        $perPage = request('per_page', 5);
+        $search = request('search');
 
-        $concessions = Concession::query()
-            ->when(request('search'), function($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
-            })
-            ->paginate($perPage);
+        $concessions = $this->concessionsInterface->getConcessions(
+            $search,
+            $perPage
+        );
 
         return response()->json($concessions);
     }
+
+//    public function loadConcessions()
+//    {
+//        $perPage = request('per_page', 5);
+//
+//        $concessions = Concession::query()
+//            ->when(request('search'), function($query, $search) {
+//                $query->where('name', 'like', "%{$search}%");
+//            })
+//            ->paginate($perPage);
+//
+//        return response()->json($concessions);
+//    }
 
     public function send(Order $order)
     {

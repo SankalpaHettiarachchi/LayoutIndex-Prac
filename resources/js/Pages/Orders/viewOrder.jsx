@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 export default function ViewOrder({ auth, order }) {
     const calculateTotal = () => {
@@ -7,20 +7,6 @@ export default function ViewOrder({ auth, order }) {
             return total + (concession.pivot.quantity * concession.pivot.unit_price);
         }, 0);
     };
-
-    const handleSendOrder = (order) => {
-        router.post(route('orders.send', { order: order.id }), {}, {
-            onSuccess: () => {
-                // Optional: Show success message or refresh data
-                router.reload();
-            },
-            onError: (errors) => {
-                // Optional: Show error message
-                console.error('Error sending order:', errors);
-            }
-        });
-    };
-
 
     return (
         <AuthenticatedLayout
@@ -152,14 +138,6 @@ export default function ViewOrder({ auth, order }) {
                                     >
                                         Edit Order
                                     </Link>
-                                    {order.status === 'pending' && (
-                                        <button
-                                            onClick={() => handleSendOrder(order)}
-                                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                        >
-                                            Send To Kitchen
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         </div>
