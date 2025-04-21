@@ -27,6 +27,9 @@ Route::Resource('/orders', OrdersController::class)->middleware(['auth', 'verifi
 Route::get('/orders/create/load-concessions', [OrdersController::class, 'loadConcessions'])
     ->name('orders.load-concessions');
 
+Route::post('/orders/{order}/send', [OrdersController::class, 'send'])
+    ->name('orders.send');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

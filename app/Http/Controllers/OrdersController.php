@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderReceivedEvent;
 use App\Interfaces\ConcessionsInterface;
 use App\Models\Concession;
 use App\Models\ConcessionOrder;
@@ -81,7 +82,20 @@ class OrdersController extends Controller
      */
     public function show(Order $order)
     {
-        dd('called');
+        // Eager load concessions with pivot data and creator/updater
+        $order->load([
+            'concessions' => function ($query) {
+                $query->select('concession.*')
+                    ->withPivot(['quantity', 'unit_price']);
+            },
+            'creator',
+            'updater'
+        ]);
+
+        return inertia('Orders/viewOrder', [
+            'order' => $order,
+            // Include any other needed data
+        ]);
     }
 
     /**
@@ -119,5 +133,10 @@ class OrdersController extends Controller
             ->paginate($perPage);
 
         return response()->json($concessions);
+    }
+
+    public function send(Order $order)
+    {
+        dd('called');
     }
 }
