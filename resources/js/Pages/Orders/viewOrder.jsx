@@ -21,6 +21,7 @@ export default function ViewOrder({ auth, order }) {
         });
     };
 
+
     return (
         <AuthenticatedLayout
             user={auth.user}

@@ -137,6 +137,11 @@ class OrdersController extends Controller
 
     public function send(Order $order)
     {
-        dd('called');
+        // Make sure to load any relationships you need
+//        $order->load(['concessions', 'user']);
+
+        event(new OrderReceivedEvent($order));
+
+//        return response()->json(['message' => 'Order sent']);
     }
 }
