@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/react';
 import { useState } from 'react'; // Add this import
 
 export default function CreateConcession() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         description: '',
         image_path: null,
@@ -33,6 +33,10 @@ export default function CreateConcession() {
         e.preventDefault();
         post(route('concessions.store'), {
             forceFormData: true,
+            onSuccess: () => {
+                reset();
+                setPreviewImage(null);
+            }
         });
     };
 
@@ -136,7 +140,7 @@ export default function CreateConcession() {
                                         href={route('concessions.index')}
                                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     >
-                                        Cancel
+                                        Back to List
                                     </Link>
                                     <button
                                         type="submit"

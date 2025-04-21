@@ -11,6 +11,24 @@ export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
+    useEffect(() => {
+        const channel = window.Echo.channel("NotificationChannel")
+            .listen(".NotificationEvent", (event) => {
+                console.log("Notification received:", event);
+
+                // Show toast notification based on event type
+                if (event.type === 'success') {
+                    toast.success(event.message);
+                } else {
+                    toast.error(event.message);
+                }
+            });
+
+        return () => {
+            window.Echo.leave("NotificationChannel");
+        };
+    }, []);
+
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="border-b border-gray-100 bg-white">
@@ -173,8 +191,17 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </header>
             )}
-
-            <ToastContainer position="top-right" autoClose={3000} />
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             <main>{children}</main>
         </div>
     );
