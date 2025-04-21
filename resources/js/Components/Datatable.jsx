@@ -13,21 +13,23 @@ export default function CommonDataTable({
         search: filters.search || '',
         per_page: filters.per_page || 5,
         sort: filters.sort || columns[0].field,
-        direction: filters.direction || 'asc'
+        direction: filters.direction || 'asc',
+        preserveScroll: true
     });
 
     const updateFilters = (newFilters) => {
         setLocalFilters(prev => ({ ...prev, ...newFilters }));
         router.get(route(routeName),
             { ...localFilters, ...newFilters },
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true,preserveScroll: true }
         );
     };
 
     const handleSort = (column, sortDirection) => {
         updateFilters({
             sort: column.selector || column.field,
-            direction: sortDirection
+            direction: sortDirection,
+            preserveScroll: true
         });
     };
 
@@ -72,7 +74,7 @@ export default function CommonDataTable({
                             id="per-page-select"
                             value={localFilters.per_page}
                             onChange={(e) => updateFilters({per_page: e.target.value})}
-                            className="px-4 py-2 border rounded-lg"
+                            className="px-4 py-2 border rounded-lg w-24"
                         >
                             <option value="5">5</option>
                             <option value="10">10</option>

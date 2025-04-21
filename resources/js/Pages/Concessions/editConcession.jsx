@@ -76,7 +76,7 @@ export default function editConcession({ auth, concession }) {
                                         <input
                                             id="price"
                                             type="number"
-                                            step="1"
+                                            step="0.01"
                                             min="0"
                                             value={data.price}
                                             onChange={(e) => setData('price', e.target.value)}

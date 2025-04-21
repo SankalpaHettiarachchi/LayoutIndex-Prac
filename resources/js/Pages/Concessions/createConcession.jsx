@@ -1,18 +1,39 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
-import { Link } from '@inertiajs/react'; // Add this import
+import { Link } from '@inertiajs/react';
+import { useState } from 'react'; // Add this import
 
 export default function CreateConcession() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
-        image_path: '',
+        image_path: null,
         price: ''
     });
 
+    const [previewImage, setPreviewImage] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setData('image_path', file);
+
+        // Create preview
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setPreviewImage(null);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('concessions.store'));
+        post(route('concessions.store'), {
+            forceFormData: true,
+        });
     };
 
     return (
@@ -41,6 +62,7 @@ export default function CreateConcession() {
                                         value={data.name}
                                         onChange={(e) => setData('name', e.target.value)}
                                         className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        autoFocus
                                     />
                                     {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                                 </div>
@@ -72,7 +94,7 @@ export default function CreateConcession() {
                                         <input
                                             id="price"
                                             type="number"
-                                            step="1"
+                                            step="0.01"
                                             min="0"
                                             value={data.price}
                                             onChange={(e) => setData('price', e.target.value)}
@@ -88,11 +110,22 @@ export default function CreateConcession() {
                                     <label htmlFor="image_path" className="block text-sm font-medium text-gray-700">
                                         Image
                                     </label>
+                                    {previewImage && (
+                                        <div className="mb-2">
+                                            <img
+                                                src={previewImage}
+                                                alt="Preview"
+                                                className="w-32 h-32 object-cover rounded"
+                                            />
+                                            <p className="text-sm text-gray-500 mt-1">Image preview</p>
+                                        </div>
+                                    )}
                                     <input
                                         id="image_path"
                                         type="file"
-                                        onChange={(e) => setData('image_path', e.target.files[0])}
+                                        onChange={handleImageChange}
                                         className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        accept="image/*"
                                     />
                                     {errors.image_path && <p className="mt-1 text-sm text-red-600">{errors.image_path}</p>}
                                 </div>
