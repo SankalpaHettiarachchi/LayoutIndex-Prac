@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationEvent;
 use App\Events\OrderReceivedEvent;
 use App\Http\Requests\StoreOrderRequest;
 use App\Interfaces\ConcessionsInterface;
-use App\Models\Concession;
-use App\Models\ConcessionOrder;
+use App\Interfaces\OrdersInterface;
 use App\Models\Order;
-use App\Repositories\OrdersRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class OrdersController extends Controller
 {
     public function __construct(
-        protected OrdersRepository $orderRepository,
+        protected OrdersInterface $ordersInterface,
         protected ConcessionsInterface $concessionsInterface
     ) {}
 
@@ -25,7 +23,7 @@ class OrdersController extends Controller
         $filters = $request->only(['search', 'per_page', 'sort', 'direction']);
 
         return Inertia::render('Orders/Index', [
-            'orders' => $this->orderRepository->getAll($filters, $filters['per_page'] ?? 5),
+            'orders' => $this->ordersInterface->getAll($filters, $filters['per_page'] ?? 5),
             'filters' => $filters
         ]);
     }
@@ -38,20 +36,29 @@ class OrdersController extends Controller
 
     public function store(StoreOrderRequest $request)
     {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        $order = $this->orderRepository->createOrder(
-            $validated,
-            $validated['concessions']
-        );
+            $validated = $request->validated();
 
-        return redirect()->route('orders.index')
-            ->with('success', 'Order created successfully');
+            $this->ordersInterface->createOrder(
+                $validated,
+                $validated['concessions']
+            );
+
+            event(new NotificationEvent('Order created successfully!', 'success'));
+
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+            event(new NotificationEvent('Failed to create order: ' . $e->getMessage(), 'error'));
+
+            return back()->withInput();
+        }
     }
 
     public function show(Order $order)
     {
-        $orderWithDetails = $this->orderRepository->getOrder($order->id);
+        $orderWithDetails = $this->ordersInterface->getOrder($order->id);
 
         return inertia('Orders/viewOrder', [
             'order' => $orderWithDetails,
@@ -60,7 +67,17 @@ class OrdersController extends Controller
 
     public function destroy(Order $order)
     {
-        //
+        try {
+
+            $this->ordersInterface->deleteOrder($order->id);
+
+            event(new NotificationEvent('Order deleted successfully!', 'success'));
+
+        } catch (\Exception $e) {
+            event(new NotificationEvent('Failed to delete order: ' . $e->getMessage(), 'error'));
+
+            return back()->withInput();
+        }
     }
 
     public function loadConcessions()
@@ -75,19 +92,6 @@ class OrdersController extends Controller
 
         return response()->json($concessions);
     }
-
-//    public function loadConcessions()
-//    {
-//        $perPage = request('per_page', 5);
-//
-//        $concessions = Concession::query()
-//            ->when(request('search'), function($query, $search) {
-//                $query->where('name', 'like', "%{$search}%");
-//            })
-//            ->paginate($perPage);
-//
-//        return response()->json($concessions);
-//    }
 
     public function send(Order $order)
     {

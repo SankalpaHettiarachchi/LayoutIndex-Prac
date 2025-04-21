@@ -16,7 +16,6 @@ use Intervention\Image\ImageManager;
 class OrdersRepository implements OrdersInterface
 {
     public function __construct(protected Order $model) {}
-
     public function getAll(array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
         $orders = $this->model->query()
@@ -46,7 +45,6 @@ class OrdersRepository implements OrdersInterface
 
         return $orders;
     }
-
     public function createOrder(array $orderData, array $concessions): Order
     {
         // Create the order (same as original)
@@ -66,7 +64,6 @@ class OrdersRepository implements OrdersInterface
 
         return $order;
     }
-
     public function getOrder(string $id): Order
     {
         return $this->model->with([
@@ -79,16 +76,10 @@ class OrdersRepository implements OrdersInterface
         ])
             ->findOrFail($id);
     }
-
     public function deleteOrder(string $id): bool
     {
-        $concession = $this->model->findOrFail($id);
+        $order = $this->model->findOrFail($id);
 
-        // Delete associated image if exists
-        if ($concession->image_path) {
-            Storage::disk('public')->delete($concession->image_path);
-        }
-
-        return $concession->delete();
+        return $order->delete();
     }
 }

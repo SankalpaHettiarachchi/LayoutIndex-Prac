@@ -13,7 +13,7 @@ use Inertia\Inertia;
 class ConcessionsController extends Controller
 {
     public function __construct(
-        protected ConcessionsInterface $concessionRepository
+        protected ConcessionsInterface $concessionsInterface
     ) {}
 
     public function index(Request $request)
@@ -21,24 +21,22 @@ class ConcessionsController extends Controller
         $filters = $request->only(['search', 'per_page', 'sort', 'direction']);
 
         return Inertia::render('Concessions/Index', [
-            'concessions' => $this->concessionRepository->getAll($filters, $filters['per_page'] ?? 5),
+            'concessions' => $this->concessionsInterface->getAll($filters, $filters['per_page'] ?? 5),
             'filters' => $filters
         ]);
     }
-
 
     public function create()
     {
         return Inertia::render('Concessions/createConcession');
     }
 
-
     public function store(StoreConcessionRequest $request)
     {
         try {
             $validated = $request->validated();
 
-            $this->concessionRepository->createConcession(
+            $this->concessionsInterface->createConcession(
                 $validated,
                 $request->file('image_path')
             );
@@ -51,7 +49,6 @@ class ConcessionsController extends Controller
             return back()->withInput();
         }
     }
-
 
     public function show(Concession $concession)
     {
@@ -73,7 +70,6 @@ class ConcessionsController extends Controller
         ]);
     }
 
-
     public function edit(Concession $concession)
     {
         return Inertia::render('Concessions/editConcession', [
@@ -81,13 +77,12 @@ class ConcessionsController extends Controller
         ]);
     }
 
-
     public function update(UpdateConcessionRequest $request, Concession $concession)
     {
         try {
 
             $validated = $request->validated();
-            $this->concessionRepository->updateConcession(
+            $this->concessionsInterface->updateConcession(
                 $concession->id,
                 $validated,
                 $request->file('image_path')
@@ -101,18 +96,15 @@ class ConcessionsController extends Controller
             return back()->withInput();
         }
     }
-
-
     public function destroy(Concession $concession)
     {
         try {
 
-            $this->concessionRepository->deleteConcession($concession->id);
+            $this->concessionsInterface->deleteConcession($concession->id);
 
             event(new NotificationEvent('Concession deleted successfully!', 'success'));
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
             event(new NotificationEvent('Failed to delete concession: ' . $e->getMessage(), 'error'));
 
             return back()->withInput();

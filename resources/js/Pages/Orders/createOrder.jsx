@@ -6,7 +6,7 @@ import ConcessionDropdown from '@/Components/ConcessionDropdown';
 export default function CreateOrder() {
     const [selectedItems, setSelectedItems] = useState([]);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors,reset } = useForm({
         concessions: [], // Initialize as empty array instead of null
         send_to_kitchen_at: ''
     });
@@ -52,6 +52,8 @@ export default function CreateOrder() {
                 console.error('Submission errors:', errors);
             },
             onSuccess: () => {
+                reset();
+                setSelectedItems([]);
                 console.log('Submission successful');
             }
         });
@@ -165,7 +167,7 @@ export default function CreateOrder() {
                                         href={route('orders.index')}
                                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     >
-                                        Cancel
+                                        Back to Orders
                                     </Link>
                                     <button
                                         type="submit"

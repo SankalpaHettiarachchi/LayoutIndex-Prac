@@ -55,8 +55,8 @@ class OrderObserver
 
     protected function generateOrderNumber(): string
     {
-        $latestOrder = Order::query()
-            ->whereNotNull('order_no')
+        $latestOrder = Order::withTrashed() // Include soft deleted records
+        ->whereNotNull('order_no')
             ->orderBy('created_at', 'desc')
             ->first();
 

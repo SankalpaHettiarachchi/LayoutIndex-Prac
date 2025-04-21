@@ -111,14 +111,14 @@ export default function ViewOrder({ auth, order }) {
                                             <p className="text-sm text-gray-500">by {order.creator?.name || 'System'}</p>
                                         </div>
                                     </div>
-                                    {order.updated_at && (
+                                    {order.updater && (
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">
                                                 Last Updated
                                             </label>
                                             <div className="block w-full mt-1 p-2 bg-gray-100 rounded-md">
                                                 <p>{new Date(order.updated_at).toLocaleString()}</p>
-                                                <p className="text-sm text-gray-500">by {order.updater?.name || 'System'}</p>
+                                                <p className="text-sm text-gray-500">by {order.updater?.name}</p>
                                             </div>
                                         </div>
                                     )}

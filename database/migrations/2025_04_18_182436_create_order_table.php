@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'in-progress', 'completed'])->default('pending');
             $table->foreignUuid('created_by')->constrained('users');
             $table->foreignUuid('updated_by')->nullable()->constrained('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

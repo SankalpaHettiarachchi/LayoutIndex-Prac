@@ -16,7 +16,6 @@ use Intervention\Image\Drivers\Gd\Driver;
 class ConcessionsRepository implements ConcessionsInterface
 {
     public function __construct(protected Concession $model) {}
-
     public function getAll(array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
         return $this->model->query()
@@ -32,7 +31,6 @@ class ConcessionsRepository implements ConcessionsInterface
             )
             ->paginate($perPage);
     }
-
     public function createConcession(array $data, ?UploadedFile $image = null)
     {
         if ($image) {
@@ -41,7 +39,6 @@ class ConcessionsRepository implements ConcessionsInterface
 
         return $this->model->create($data);
     }
-
     public function deleteConcession(string $id): bool
     {
         $concession = $this->model->findOrFail($id);
@@ -52,7 +49,6 @@ class ConcessionsRepository implements ConcessionsInterface
         }
         return $concession->delete();
     }
-
     public function getConcessions(?string $search = null,int $perPage = 5): LengthAwarePaginator
     {
         return $this->model->query()
@@ -61,7 +57,6 @@ class ConcessionsRepository implements ConcessionsInterface
             })
             ->paginate($perPage);
     }
-
     public function updateConcession(string $id, array $data, ?UploadedFile $image = null): Concession
     {
         $concession = $this->model->findOrFail($id);
@@ -82,7 +77,6 @@ class ConcessionsRepository implements ConcessionsInterface
 
         return $concession;
     }
-
     protected function processAndStoreImage(UploadedFile $image): string
     {
         // Initialize ImageManager with driver
