@@ -37,7 +37,6 @@ class OrdersController extends Controller
     public function store(StoreOrderRequest $request)
     {
         try {
-            $validated = $request->validated();
 
             $validated = $request->validated();
 
@@ -98,7 +97,5 @@ class OrdersController extends Controller
             'status' => Order::STATUS_IN_PROGRESS
         ]);
         event(new OrderReceivedEvent($order));
-
-//        return response()->json(['message' => 'Order sent']);
     }
 }

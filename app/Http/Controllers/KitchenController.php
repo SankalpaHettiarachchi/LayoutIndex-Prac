@@ -2,65 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationEvent;
+use App\Events\OrderReceivedEvent;
+use App\Interfaces\ConcessionsInterface;
+use App\Interfaces\KithchenInterface;
+use App\Interfaces\OrdersInterface;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class KitchenController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected KithchenInterface $kitchenInterface,
+        protected ConcessionsInterface $concessionsInterface
+    ) {}
+    public function index(Request $request)
     {
-        return Inertia::render('Kitchen/Index');
+        $filters = $request->only(['search', 'per_page', 'sort', 'direction','status']);
+
+        return Inertia::render('Kitchen/Index', [
+            'orders' => $this->kitchenInterface->getAll($filters, $filters['per_page'] ?? 5),
+            'filters' => $filters
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function complete(Order $order)
     {
-        //
-    }
+        try {
+            $order->update([
+                'status' => 'completed',
+                'completed_at' => now() // Add this if you track completion time
+            ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Order $order)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Order $order)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Order $order)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Order $order)
-    {
-        //
+            event(new NotificationEvent('Order #'.$order->order_no.' completed', 'success'));
+            return back();
+        } catch (\Exception $e) {
+            event(new NotificationEvent('Failed to complete order: '.$e->getMessage(), 'error'));
+            return back()->withInput();
+        }
     }
 }
