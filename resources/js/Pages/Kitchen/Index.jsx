@@ -14,7 +14,7 @@ export default function Kitchen({ orders, filters }) {
     });
 
     useEffect(() => {
-        const channel = window.Echo.channel("OrderChannel")
+        const channel = window.Echo.channel("OrderReceivedChannel")
             .listen(".Create", (event) => {
                 console.log("Event received:", event);
                 const order = event.order;
@@ -23,7 +23,7 @@ export default function Kitchen({ orders, filters }) {
             });
 
         return () => {
-            window.Echo.leave("OrderChannel");
+            window.Echo.leave("OrderReceivedChannel");
         };
     }, []);
 
@@ -179,15 +179,15 @@ export default function Kitchen({ orders, filters }) {
                                                             order.status
                                                         )}`}
                                                     >
-            {order.status.replace('-', ' ')}
-        </span>
+                                                        {order.status.replace('-', ' ')}
+                                                    </span>
                                                 </div>
 
                                                 {/* Time + action (only when in‑progress) */}
                                                 <div className="flex items-center space-x-4">
-        <span className="text-sm text-gray-500">
-            {formatTime(order.send_to_kitchen_at)}
-        </span>
+                                                    <span className="text-sm text-gray-500">
+                                                        {formatTime(order.send_to_kitchen_at)}
+                                                    </span>
 
                                                     {order.status === 'in-progress' && (
                                                         <button

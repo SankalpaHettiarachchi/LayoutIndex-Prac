@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 
 export default function Orders({ orders, filters }) {
     useEffect(() => {
-        const channel = window.Echo.channel("OrderChannel")
+        const channel = window.Echo.channel("OrderSentChannel")
             .listen(".Create", (event) => {
                 console.log("Event received:", event);
                 router.reload();
@@ -18,7 +18,7 @@ export default function Orders({ orders, filters }) {
             });
 
         return () => {
-            window.Echo.leave("OrderChannel");
+            window.Echo.leave("OrderSentChannel");
         };
     }, []);
 

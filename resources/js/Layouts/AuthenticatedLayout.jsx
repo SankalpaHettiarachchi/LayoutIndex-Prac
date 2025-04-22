@@ -8,26 +8,28 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const user  = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    useEffect(() => {
-        const channel = window.Echo.channel("NotificationChannel")
-            .listen(".NotificationEvent", (event) => {
-                console.log("Notification received:", event);
+    const page    = usePage();
+    const rawUrl  = page.url;
+    const url     = typeof rawUrl === 'string' ? rawUrl : rawUrl();
 
-                // Show toast notification based on event type
-                if (event.type === 'success') {
-                    toast.success(event.message);
-                } else {
-                    toast.error(event.message);
-                }
+    useEffect(() => {
+        if (url.startsWith('/dashboard') || url.startsWith('/concessions') || url.startsWith('/kitchen')) {
+            return;
+        }
+        const channel = window.Echo.channel('NotificationChannel')
+            .listen('.NotificationEvent', (event) => {
+                event.type === 'success'
+                    ? toast.success(event.message)
+                    : toast.error(event.message);
             });
 
         return () => {
-            window.Echo.leave("NotificationChannel");
+            window.Echo.leave('NotificationChannel');
         };
-    }, []);
+    }, [url]);
 
     return (
         <div className="min-h-screen bg-gray-100">
