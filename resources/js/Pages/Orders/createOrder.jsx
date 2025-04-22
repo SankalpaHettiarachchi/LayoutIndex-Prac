@@ -47,6 +47,14 @@ export default function CreateOrder() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        const selectedTime = new Date(data.send_to_kitchen_at);
+        const now = new Date();
+
+        if (selectedTime <= now) {
+            alert('Please select a future time for sending to kitchen.');
+            return;
+        }
+
         post(route('orders.store'), {
             onError: (errors) => {
                 console.error('Submission errors:', errors);
@@ -83,7 +91,8 @@ export default function CreateOrder() {
 
                                         {/* Add Send to Kitchen Time input */}
                                         <div className="mt-4">
-                                            <label htmlFor="send_to_kitchen_at" className="block text-sm font-medium text-gray-700">
+                                            <label htmlFor="send_to_kitchen_at"
+                                                   className="block text-sm font-medium text-gray-700">
                                                 Send to Kitchen Time
                                             </label>
                                             <input
@@ -92,6 +101,7 @@ export default function CreateOrder() {
                                                 name="send_to_kitchen_at"
                                                 value={data.send_to_kitchen_at}
                                                 onChange={(e) => setData('send_to_kitchen_at', e.target.value)}
+                                                min={new Date().toISOString().slice(0, 16)}
                                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                             />
                                             {errors.send_to_kitchen_at && (
@@ -105,7 +115,7 @@ export default function CreateOrder() {
                                         <h4 className="font-medium text-lg">Selected Items</h4>
                                         {selectedItems.length > 0 ? (
                                             <>
-                                                <div className="space-y-2 overflow-y-auto pr-2"
+                                            <div className="space-y-2 overflow-y-auto pr-2"
                                                      style={{maxHeight: '60vh'}}>
                                                     {selectedItems.map((item) => (
                                                         <div key={item.id}

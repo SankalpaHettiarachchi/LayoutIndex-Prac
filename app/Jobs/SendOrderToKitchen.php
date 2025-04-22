@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\OrderReceivedEvent;
 use App\Models\Order;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -27,6 +28,7 @@ class SendOrderToKitchen implements ShouldQueue
             $this->order->update([
                 'status' => Order::STATUS_IN_PROGRESS
             ]);
+            event(new OrderReceivedEvent($this->order));
         }else{
             Log::info('No order has been sent to Kitchen. At ::'.$this->order->send_to_kitchen_at);
         }
