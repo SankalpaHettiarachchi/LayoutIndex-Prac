@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Interfaces\ConcessionsInterface;
-use App\Interfaces\KithchenInterface;
+use App\Interfaces\KitchenInterface;
 use App\Interfaces\OrdersInterface;
 use App\Models\Concession;
 use App\Models\Order;
@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
             OrdersRepository::class
         );
         $this->app->bind(
-            KithchenInterface::class,
+            KitchenInterface::class,
             KitchenRepository::class
         );
     }

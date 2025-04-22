@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\NotificationEvent;
-use App\Events\OrderReceivedEvent;
 use App\Interfaces\ConcessionsInterface;
-use App\Interfaces\KithchenInterface;
-use App\Interfaces\OrdersInterface;
+use App\Interfaces\KitchenInterface;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +12,7 @@ use Inertia\Inertia;
 class KitchenController extends Controller
 {
     public function __construct(
-        protected KithchenInterface $kitchenInterface,
+        protected KitchenInterface $kitchenInterface,
         protected ConcessionsInterface $concessionsInterface
     ) {}
     public function index(Request $request)
@@ -22,7 +20,7 @@ class KitchenController extends Controller
         $filters = $request->only(['search', 'per_page', 'sort', 'direction','status']);
 
         return Inertia::render('Kitchen/Index', [
-            'orders' => $this->kitchenInterface->getAll($filters, $filters['per_page'] ?? 5),
+            'orders' => $this->kitchenInterface->getAll($filters, $filters['status'] ?? 'in-progress',$filters['per_page'] ?? 5),
             'filters' => $filters
         ]);
     }

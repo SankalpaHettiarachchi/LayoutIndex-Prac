@@ -20,6 +20,7 @@ export default function Kitchen({ orders, filters }) {
                 const order = event.order;
                 const message = event.message;
                 toast.info(`${message}: ${order.order_no}`);
+                router.reload();
             });
 
         return () => {
@@ -130,7 +131,6 @@ export default function Kitchen({ orders, filters }) {
                                     >
                                         <option value="in-progress">In Progress</option>
                                         <option value="completed">Completed</option>
-                                        <option value="all">All</option>
                                     </select>
                                 </div>
 

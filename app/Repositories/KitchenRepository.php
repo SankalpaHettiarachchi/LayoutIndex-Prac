@@ -2,18 +2,19 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\KithchenInterface;
+use App\Interfaces\KitchenInterface;
 use App\Jobs\SendOrderToKitchen;
 use App\Models\ConcessionOrder;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class KitchenRepository implements KithchenInterface
+class KitchenRepository implements KitchenInterface
 {
 
     public function __construct(protected Order $model) {}
-    public function getAll(array $filters = [], int $perPage = 10): LengthAwarePaginator
+
+    public function getAll(array $filters = [],string $status = 'in-progress', int $perPage = 5): LengthAwarePaginator
     {
         $query = $this->model->query()
             ->with(['concessions' => function ($query) {
@@ -22,8 +23,10 @@ class KitchenRepository implements KithchenInterface
             }]);
 
         // Status filter
-        if (($filters['status'] ?? null) && $filters['status'] !== 'all') {
+        if (($filters['status'] ?? null) && $filters['status'] !== 'in-progress') {
             $query->where('status', $filters['status']);
+        }else{
+            $query->where('status', $status);
         }
 
         // Search functionality
