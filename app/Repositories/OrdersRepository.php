@@ -3,9 +3,11 @@
 namespace App\Repositories;
 
 use App\Interfaces\OrdersInterface;
+use App\Jobs\SendOrderToKitchen;
 use App\Models\Concession;
 use App\Models\ConcessionOrder;
 use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -61,6 +63,8 @@ class OrdersRepository implements OrdersInterface
                 'unit_price' => $concession['price']
             ]);
         }
+
+        SendOrderToKitchen::dispatch($order)->delay(Carbon::parse($order->send_to_kitchen_at));
 
         return $order;
     }
