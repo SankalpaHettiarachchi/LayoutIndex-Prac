@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, Link } from '@inertiajs/react';
+import {Head, useForm, Link, router} from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import ConcessionDropdown from '@/Components/ConcessionDropdown';
+import {toast} from "react-toastify";
 
 export default function CreateOrder() {
     const [selectedItems, setSelectedItems] = useState([]);
@@ -19,6 +20,19 @@ export default function CreateOrder() {
             price: item.price,
         })));
     }, [selectedItems]);
+
+    useEffect(() => {
+        const channel = window.Echo.channel('OrderNotificationChannel')
+            .listen('.ActionResponse', (event) => {
+                event.type === 'success'
+                    ? toast.success(event.message)
+                    : toast.error(event.message);
+            });
+
+        return () => {
+            window.Echo.leave('NotificationChannel');
+        };
+    }, []);
 
     const handleAddConcession = (concession) => {
         setSelectedItems(prev => {

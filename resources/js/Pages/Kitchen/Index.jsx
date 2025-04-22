@@ -14,17 +14,23 @@ export default function Kitchen({ orders, filters }) {
     });
 
     useEffect(() => {
-        const channel = window.Echo.channel("OrderReceivedChannel")
-            .listen(".Create", (event) => {
-                console.log("Event received:", event);
+        const channel = window.Echo.channel("OrderInProgressChannel")
+            .listen(".OrderStatusUpdate", (event) => {
                 const order = event.order;
-                const message = event.message;
-                toast.info(`${message}: ${order.order_no}`);
+                toast.info(`New Order Received : ${order.order_no}`);
+                router.reload();
+            });
+
+        const completeChannel = window.Echo.channel("OrderCompleteChannel")
+            .listen(".OrderStatusUpdate", (event) => {
+                const order = event.order;
+                toast.success(`Order completed: ${order.order_no}`);
                 router.reload();
             });
 
         return () => {
-            window.Echo.leave("OrderReceivedChannel");
+            window.Echo.leave("OrderInProgressChannel");
+            window.Echo.leave("OrderCompleteChannel");
         };
     }, []);
 

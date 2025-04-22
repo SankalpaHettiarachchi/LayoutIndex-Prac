@@ -22,11 +22,11 @@ class OrderSeeder extends Seeder
         $baseTime = Carbon::now()->subHours(3);
 
         // Create 5 orders with concession items
-        for ($i = 0; $i < 10000; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $randomHours = rand(0, 3); // Random hours between 0-3
             $randomMinutes = rand(0, 59); // Random minutes
-            $orderCreateTime = $baseTime->copy()->addMinutes($i);
-            $orderUpdateTime = $baseTime->copy()->addMinutes($i+2);
+            $orderCreateTime = $baseTime->copy()->addSecond($i);
+            $orderUpdateTime = $baseTime->copy()->addSecond($i+2);
 
             $order = Order::create([
                 'id' => Str::uuid(),

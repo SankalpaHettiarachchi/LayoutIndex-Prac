@@ -11,16 +11,9 @@ export default function AuthenticatedLayout({ header, children }) {
     const user  = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    const page    = usePage();
-    const rawUrl  = page.url;
-    const url     = typeof rawUrl === 'string' ? rawUrl : rawUrl();
-
     useEffect(() => {
-        if (url.startsWith('/concessions') || url.startsWith('/kitchen')) {
-            return;
-        }
         const channel = window.Echo.channel('NotificationChannel')
-            .listen('.NotificationEvent', (event) => {
+            .listen('.ActionResponse', (event) => {
                 event.type === 'success'
                     ? toast.success(event.message)
                     : toast.error(event.message);
@@ -29,7 +22,8 @@ export default function AuthenticatedLayout({ header, children }) {
         return () => {
             window.Echo.leave('NotificationChannel');
         };
-    }, [url]);
+
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-100">

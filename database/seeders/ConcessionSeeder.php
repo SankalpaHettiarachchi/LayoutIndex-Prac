@@ -22,7 +22,7 @@ class ConcessionSeeder extends Seeder
         $users = User::all();
         $foodTypes = ['Burger', 'Pizza', 'Hot Dog', 'Nachos', 'Popcorn'];
 
-        for ($i = 1; $i <= 100000; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
             Concession::create([
                 'id' => Str::uuid(),
                 'name' => $this->generateFoodName($i, $foodTypes),

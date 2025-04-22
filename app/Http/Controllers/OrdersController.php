@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\NotificationEvent;
+use App\Events\OrderEvent;
 use App\Events\OrderReceivedEvent;
 use App\Http\Requests\StoreOrderRequest;
 use App\Interfaces\ConcessionsInterface;
@@ -45,7 +46,7 @@ class OrdersController extends Controller
                 $validated['concessions']
             );
 
-            event(new NotificationEvent('Order created successfully!', 'success'));
+            event(new NotificationEvent('Order created successfully!', 'success','order'));
 
         } catch (\Exception $e) {
             event(new NotificationEvent('Failed to create order: ' . $e->getMessage(), 'error'));
@@ -69,7 +70,7 @@ class OrdersController extends Controller
 
             $this->ordersInterface->deleteOrder($order->id);
 
-            event(new NotificationEvent('Order deleted successfully!', 'success'));
+            event(new NotificationEvent('Order deleted successfully!', 'success', 'order'));
 
         } catch (\Exception $e) {
             event(new NotificationEvent('Failed to delete order: ' . $e->getMessage(), 'error'));
@@ -96,6 +97,6 @@ class OrdersController extends Controller
         $order->update([
             'status' => Order::STATUS_IN_PROGRESS
         ]);
-        event(new OrderReceivedEvent($order));
+        event(new OrderEvent($order));
     }
 }

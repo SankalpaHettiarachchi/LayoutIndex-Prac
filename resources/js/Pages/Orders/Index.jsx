@@ -8,17 +8,31 @@ import dayjs from 'dayjs';
 
 export default function Orders({ orders, filters }) {
     useEffect(() => {
-        const channel = window.Echo.channel("OrderSentChannel")
-            .listen(".Create", (event) => {
-                console.log("Event received:", event);
-                router.reload();
+        const inProgressChannel = window.Echo.channel("OrderInProgressChannel")
+            .listen(".OrderStatusUpdate", (event) => {
                 const order = event.order;
-                const message = event.message;
-                toast.success(`Sent to kitchen: ${order.order_no}`);
+                toast.success(`Order sent to kitchen: ${order.order_no}`);
+                router.reload();
+            });
+
+        const completeChannel = window.Echo.channel("OrderCompleteChannel")
+            .listen(".OrderStatusUpdate", (event) => {
+                const order = event.order;
+                toast.info(`Order completed: ${order.order_no}`);
+                router.reload();
+            });
+
+        const notificationChannel = window.Echo.channel('OrderNotificationChannel')
+            .listen('.ActionResponse', (event) => {
+                event.type === 'success'
+                    ? toast.success(event.message)
+                    : toast.error(event.message);
             });
 
         return () => {
-            window.Echo.leave("OrderSentChannel");
+            window.Echo.leave("OrderInProgressChannel");
+            window.Echo.leave("OrderCompleteChannel");
+            window.Echo.leave("OrderNotificationChannel");
         };
     }, []);
 
@@ -65,7 +79,7 @@ export default function Orders({ orders, filters }) {
             header: 'Total',
             field: 'total',
             render: (item) => `LKR ${item.total}`,
-            sortable: true
+            sortable: false
         },
         {
             header: 'Auto Send Countdown',
@@ -99,7 +113,7 @@ export default function Orders({ orders, filters }) {
                         View
                     </Link>
 
-                    {item.status !== 'in-progress' && (
+                    {item.status !== 'in-progress' || item.status !== 'completed' &&  (
                         <button
                             onClick={() => sendOrder(item.id)}
                             className="text-green-600 hover:text-green-900 whitespace-nowrap"
@@ -140,6 +154,7 @@ export default function Orders({ orders, filters }) {
                                 columns={columns}
                                 routeName="orders.index"
                                 filters={filters}
+                                statusFilter={true}
                                 createRoute="orders.create"
                             />
                         </div>

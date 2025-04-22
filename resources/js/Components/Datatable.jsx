@@ -3,26 +3,39 @@ import { router, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function CommonDataTable({
-      data,
-      columns,
-      routeName,
-      filters = {},
-      createRoute = null
+    data,
+    columns,
+    routeName,
+    statusFilter,
+    filters = {},
+    createRoute = null
 }) {
     const [localFilters, setLocalFilters] = useState({
         search: filters.search || '',
         per_page: filters.per_page || 5,
         sort: filters.sort || columns[0].field,
         direction: filters.direction || 'asc',
-        preserveScroll: true
+        preserveScroll: true,
+        status: filters.status || '' // Add status filter
     });
 
     const updateFilters = (newFilters) => {
-        setLocalFilters(prev => ({ ...prev, ...newFilters }));
-        router.get(route(routeName),
-            { ...localFilters, ...newFilters },
-            { preserveState: true, replace: true,preserveScroll: true }
-        );
+        setLocalFilters(prev => {
+            const updatedFilters = { ...prev, ...newFilters };
+
+            // Combine search and status for the actual filter
+            const filterParams = {
+                ...updatedFilters,
+                search: updatedFilters.status ? `${updatedFilters.search} ${updatedFilters.status}` : updatedFilters.search
+            };
+
+            router.get(route(routeName),
+                filterParams,
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+
+            return updatedFilters;
+        });
     };
 
     const handleSort = (column, sortDirection) => {
@@ -44,17 +57,15 @@ export default function CommonDataTable({
             </div>
         ),
         grow: column.grow || 1,
-        // Optional: Fix width explicitly if needed
         style: column.width ? { width: column.width, maxWidth: column.width } : {},
-        wrap: true // Optional: allow wrapping in cells
+        wrap: true
     }));
 
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row items-end gap-4 mb-4">
-                {/* Search and Per Page controls - will grow to fill space */}
                 <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-4 flex-1">
-                    {/* Search Input with Inline Label */}
+                    {/* Search Input */}
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                         <label htmlFor="search-input" className="text-sm font-medium text-gray-700 whitespace-nowrap">
                             Search:
@@ -63,13 +74,40 @@ export default function CommonDataTable({
                             id="search-input"
                             type="text"
                             placeholder="Type to search..."
-                            value={localFilters.search}
-                            onChange={(e) => updateFilters({search: e.target.value})}
+                            value={localFilters.search.replace(/ status:\w+$/, '')} // Remove status part from display
+                            onChange={(e) => updateFilters({
+                                search: e.target.value,
+                                status: localFilters.status // Maintain current status
+                            })}
                             className="px-4 py-2 border rounded-lg flex-1 min-w-0"
                         />
                     </div>
 
-                    {/* Per Page Selector with Inline Label */}
+                    {statusFilter && (
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <label htmlFor="status-select"
+                                   className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                                Status:
+                            </label>
+                            <select
+                                id="status-select"
+                                value={localFilters.status}
+                                onChange={(e) => updateFilters({
+                                    status: e.target.value,
+                                    search: localFilters.search.replace(/ status:\w+$/, '') // Maintain search without old status
+                                })}
+                                className="px-4 py-2 border rounded-lg w-36"
+                            >
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    )}
+
+
+                    {/* Per Page Selector */}
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                         <label htmlFor="per-page-select"
                                className="text-sm font-medium text-gray-700 whitespace-nowrap">
@@ -89,7 +127,6 @@ export default function CommonDataTable({
                     </div>
                 </div>
 
-                {/* Create New Button - forced to end */}
                 {createRoute && (
                     <div className="w-full sm:w-auto">
                         <Link
@@ -102,6 +139,7 @@ export default function CommonDataTable({
                 )}
             </div>
 
+            {/* DataTable remains the same */}
             <DataTable
                 columns={transformedColumns}
                 data={data.data}
