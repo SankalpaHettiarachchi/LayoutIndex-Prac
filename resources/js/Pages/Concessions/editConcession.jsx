@@ -1,5 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
+import {useEffect} from "react";
+import {toast} from "react-toastify";
 
 export default function editConcession({ auth, concession }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -16,6 +18,19 @@ export default function editConcession({ auth, concession }) {
             forceFormData: true,
         });
     };
+
+    useEffect(() => {
+        const channel = window.Echo.channel('ConcessionNotificationChannel')
+            .listen('.ActionResponse', (event) => {
+                event.type === 'success'
+                    ? toast.success(event.message)
+                    : toast.error(event.message);
+            });
+
+        return () => {
+            window.Echo.leave('ConcessionNotificationChannel');
+        };
+    }, []);
 
     return (
         <AuthenticatedLayout

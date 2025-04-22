@@ -41,10 +41,10 @@ class ConcessionsController extends Controller
                 $request->file('image_path')
             );
 
-            event(new NotificationEvent('Concession created successfully!', 'success'));
+            event(new NotificationEvent('Concession created successfully!', 'success','concession'));
 
         } catch (\Exception $e) {
-            event(new NotificationEvent('Failed to create concession: ' . $e->getMessage(), 'error'));
+            event(new NotificationEvent('Failed to create concession: ' . $e->getMessage(), 'error','concession'));
 
             return back()->withInput();
         }
@@ -88,10 +88,10 @@ class ConcessionsController extends Controller
                 $request->file('image_path')
             );
 
-            event(new NotificationEvent('Concession updated successfully!', 'success'));
+            event(new NotificationEvent('Concession updated successfully!', 'success','concession'));
 
         } catch (\Exception $e) {
-            event(new NotificationEvent('Failed to update concession: ' . $e->getMessage(), 'error'));
+            event(new NotificationEvent('Failed to update concession: ' . $e->getMessage(), 'error','concession'));
 
             return back()->withInput();
         }
@@ -102,10 +102,10 @@ class ConcessionsController extends Controller
 
             $this->concessionsInterface->deleteConcession($concession->id);
 
-            event(new NotificationEvent('Concession deleted successfully!', 'success'));
+            event(new NotificationEvent('Concession deleted successfully!', 'success','concession'));
 
         } catch (\Exception $e) {
-            event(new NotificationEvent('Failed to delete concession: ' . $e->getMessage(), 'error'));
+            event(new NotificationEvent('Failed to delete concession: ' . $e->getMessage(), 'error','concession'));
 
             return back()->withInput();
         }

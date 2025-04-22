@@ -2,8 +2,24 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
+import {useEffect} from "react";
+import {toast} from "react-toastify";
 
 export default function Concessions({ concessions, filters }) {
+
+    useEffect(() => {
+        const channel = window.Echo.channel('ConcessionNotificationChannel')
+            .listen('.ActionResponse', (event) => {
+                event.type === 'success'
+                    ? toast.success(event.message)
+                    : toast.error(event.message);
+            });
+
+        return () => {
+            window.Echo.leave('ConcessionNotificationChannel');
+        };
+    }, []);
+
     const columns = [
         {
             header: 'Image',

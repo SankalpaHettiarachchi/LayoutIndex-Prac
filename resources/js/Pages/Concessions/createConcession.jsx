@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import { useState } from 'react'; // Add this import
+import {useEffect, useState} from 'react';
+import {toast} from "react-toastify"; // Add this import
 
 export default function CreateConcession() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -39,6 +40,19 @@ export default function CreateConcession() {
             }
         });
     };
+
+    useEffect(() => {
+        const channel = window.Echo.channel('ConcessionNotificationChannel')
+            .listen('.ActionResponse', (event) => {
+                event.type === 'success'
+                    ? toast.success(event.message)
+                    : toast.error(event.message);
+            });
+
+        return () => {
+            window.Echo.leave('ConcessionNotificationChannel');
+        };
+    }, []);
 
     return (
         <AuthenticatedLayout
