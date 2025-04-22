@@ -17,10 +17,6 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::Resource('/concessions', ConcessionsController::class)->middleware(['auth', 'verified'])->names('concessions');
 Route::Resource('/orders', OrdersController::class)->middleware(['auth', 'verified'])->names('orders');
 Route::get('/orders/create/load-concessions', [OrdersController::class, 'loadConcessions'])->name('orders.load-concessions');
