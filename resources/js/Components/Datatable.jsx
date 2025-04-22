@@ -34,15 +34,20 @@ export default function CommonDataTable({
     };
 
     // Transform columns for react-data-table-component
-    const transformedColumns = [
-        ...columns.map(column => ({
-            name: column.header,
-            selector: row => column.field ? row[column.field] : null,
-            sortable: column.sortable || false,
-            cell: row => column.render ? column.render(row) : (column.field ? row[column.field] : null),
-            grow: column.grow || 1, // Allow columns to grow as needed
-        })),
-    ];
+    const transformedColumns = columns.map(column => ({
+        name: <div className={column.className || ''}>{column.header}</div>,
+        selector: row => column.field ? row[column.field] : null,
+        sortable: column.sortable || false,
+        cell: row => (
+            <div className={column.className || ''}>
+                {column.render ? column.render(row) : (column.field ? row[column.field] : null)}
+            </div>
+        ),
+        grow: column.grow || 1,
+        // Optional: Fix width explicitly if needed
+        style: column.width ? { width: column.width, maxWidth: column.width } : {},
+        wrap: true // Optional: allow wrapping in cells
+    }));
 
     return (
         <div className="space-y-4">

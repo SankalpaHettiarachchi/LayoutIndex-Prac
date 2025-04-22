@@ -17,15 +17,13 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::Resource('/concessions', ConcessionsController::class)->middleware(['auth', 'verified'])->names('concessions');
 Route::Resource('/orders', OrdersController::class)->middleware(['auth', 'verified'])->names('orders');
 Route::get('/orders/create/load-concessions', [OrdersController::class, 'loadConcessions'])->name('orders.load-concessions');
 Route::post('/orders/{order}/send', [OrdersController::class, 'send'])->name('orders.send');
 Route::Resource('/kitchen', KitchenController::class)->middleware(['auth', 'verified'])->names('kitchen');
+Route::post('/kitchen/{order}/complete', [KitchenController::class, 'complete'])->name('kitchen.complete');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

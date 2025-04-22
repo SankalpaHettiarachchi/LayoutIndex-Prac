@@ -90,8 +90,10 @@ class Order extends Model
 
     public function getTotalAttribute()
     {
-        return $this->concessions->sum(function ($concession) {
+        $total = $this->concessions->sum(function ($concession) {
             return $concession->pivot->quantity * $concession->pivot->unit_price;
         });
+
+        return number_format($total, 2); // Format with 2 decimal places
     }
 }

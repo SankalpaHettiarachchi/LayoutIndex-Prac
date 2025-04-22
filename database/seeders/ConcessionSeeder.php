@@ -4,9 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Concession;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -24,7 +22,7 @@ class ConcessionSeeder extends Seeder
         $users = User::all();
         $foodTypes = ['Burger', 'Pizza', 'Hot Dog', 'Nachos', 'Popcorn'];
 
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 100000; $i++) {
             Concession::create([
                 'id' => Str::uuid(),
                 'name' => $this->generateFoodName($i, $foodTypes),

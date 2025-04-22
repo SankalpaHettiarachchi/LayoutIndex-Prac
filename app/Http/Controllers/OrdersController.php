@@ -37,7 +37,6 @@ class OrdersController extends Controller
     public function store(StoreOrderRequest $request)
     {
         try {
-            $validated = $request->validated();
 
             $validated = $request->validated();
 
@@ -49,7 +48,6 @@ class OrdersController extends Controller
             event(new NotificationEvent('Order created successfully!', 'success'));
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
             event(new NotificationEvent('Failed to create order: ' . $e->getMessage(), 'error'));
 
             return back()->withInput();
@@ -95,11 +93,9 @@ class OrdersController extends Controller
 
     public function send(Order $order)
     {
-        // Make sure to load any relationships you need
-//        $order->load(['concessions', 'user']);
-
+        $order->update([
+            'status' => Order::STATUS_IN_PROGRESS
+        ]);
         event(new OrderReceivedEvent($order));
-
-//        return response()->json(['message' => 'Order sent']);
     }
 }

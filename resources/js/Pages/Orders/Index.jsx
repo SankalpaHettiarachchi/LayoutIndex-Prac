@@ -3,19 +3,22 @@ import { Head, Link, router } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import CountdownTimer from '@/Components/CountdownTimer';
+import dayjs from 'dayjs';
 
 export default function Orders({ orders, filters }) {
     useEffect(() => {
-        const channel = window.Echo.channel("OrderChannel")
+        const channel = window.Echo.channel("OrderSentChannel")
             .listen(".Create", (event) => {
                 console.log("Event received:", event);
+                router.reload();
                 const order = event.order;
                 const message = event.message;
                 toast.success(`Sent to kitchen: ${order.order_no}`);
             });
 
         return () => {
-            window.Echo.leave("OrderChannel");
+            window.Echo.leave("OrderSentChannel");
         };
     }, []);
 
@@ -50,7 +53,7 @@ export default function Orders({ orders, filters }) {
         {
             header: 'Order No',
             field: 'order_no',
-            sortable: true
+            sortable: true,
         },
         {
             header: 'Send to Kitchen Time',
@@ -63,6 +66,21 @@ export default function Orders({ orders, filters }) {
             field: 'total',
             render: (item) => `LKR ${item.total}`,
             sortable: true
+        },
+        {
+            header: 'Auto Send Countdown',
+            field: 'countdown',
+            render: (item) => {
+                if (
+                    item.status === 'in-progress' || // already sent
+                    !item.send_to_kitchen_at ||     // no time set
+                    dayjs(item.send_to_kitchen_at).isBefore(dayjs()) // time passed
+                ) {
+                    return <span className="text-gray-500">Already Sent</span>;
+                }
+
+                return <CountdownTimer targetTime={item.send_to_kitchen_at} />;
+            }
         },
         {
             header: 'Status',
@@ -80,22 +98,26 @@ export default function Orders({ orders, filters }) {
                     >
                         View
                     </Link>
-                    <button
-                        onClick={() => sendOrder(item.id)}
-                        className="text-green-600 hover:text-green-900 whitespace-nowrap"
-                    >
-                        Send to Kitchen
-                    </button>
-                    <button
-                        onClick={() => deleteOrder(item.id)}
-                        className="text-red-600 hover:text-red-900 whitespace-nowrap"
-                    >
-                        Delete
-                    </button>
+
+                    {item.status !== 'in-progress' && (
+                        <button
+                            onClick={() => sendOrder(item.id)}
+                            className="text-green-600 hover:text-green-900 whitespace-nowrap"
+                        >
+                            Send
+                        </button>
+                    )}
+
+                    {item.status !== 'in-progress' && (
+                        <button
+                            onClick={() => deleteOrder(item.id)}
+                            className="text-red-600 hover:text-red-900 whitespace-nowrap"
+                        >
+                            Delete
+                        </button>
+                    )}
                 </div>
-            ),
-            grow: 0,
-            minWidth: '250px'
+            )
         }
     ];
 

@@ -8,26 +8,28 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const user  = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    useEffect(() => {
-        const channel = window.Echo.channel("NotificationChannel")
-            .listen(".NotificationEvent", (event) => {
-                console.log("Notification received:", event);
+    const page    = usePage();
+    const rawUrl  = page.url;
+    const url     = typeof rawUrl === 'string' ? rawUrl : rawUrl();
 
-                // Show toast notification based on event type
-                if (event.type === 'success') {
-                    toast.success(event.message);
-                } else {
-                    toast.error(event.message);
-                }
+    useEffect(() => {
+        if (url.startsWith('/concessions') || url.startsWith('/kitchen')) {
+            return;
+        }
+        const channel = window.Echo.channel('NotificationChannel')
+            .listen('.NotificationEvent', (event) => {
+                event.type === 'success'
+                    ? toast.success(event.message)
+                    : toast.error(event.message);
             });
 
         return () => {
-            window.Echo.leave("NotificationChannel");
+            window.Echo.leave('NotificationChannel');
         };
-    }, []);
+    }, [url]);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -42,12 +44,6 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
                                 <NavLink
                                     href={route('concessions.index')}
                                     active={route().current('concessions.index')}
@@ -140,12 +136,6 @@ export default function AuthenticatedLayout({ header, children }) {
 
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('concessions.index')}
                             active={route().current('concessions.index')}
