@@ -49,7 +49,7 @@ class OrderEvent implements ShouldBroadcastNow
                 'send_to_kitchen_at' => $this->order->send_to_kitchen_at
                     ? Carbon::parse($this->order->send_to_kitchen_at)->format('M d, Y h:i A')
                     : null,
-                'created_at' => $this->order->created_at->toISOString(),
+                'created_at' => $this->order->created_at,
                 'created_by' => $this->order->created_by,
             ]
         ];
