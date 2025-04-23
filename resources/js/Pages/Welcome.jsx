@@ -110,7 +110,7 @@ export default function Welcome({ auth }) {
                         </main>
 
                         <footer className="py-16 text-center text-sm text-black dark:text-white/70">
-                            © {new Date().getFullYear()} ABC Restaurant. All rights reserved.(Education Purpose Only)
+                            © {new Date().getFullYear()} ABC Restaurant. All rights reserved.(Educational Purpose Only)
                         </footer>
                     </div>
                 </div>
