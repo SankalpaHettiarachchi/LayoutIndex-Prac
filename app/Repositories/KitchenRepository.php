@@ -58,27 +58,7 @@ class KitchenRepository implements KitchenInterface
 
         return $orders;
     }
-    public function createOrder(array $orderData, array $concessions): Order
-    {
-        // Create the order (same as original)
-        $order = Order::create([
-            'send_to_kitchen_at' => $orderData['send_to_kitchen_at'],
-        ]);
 
-        // Create concession orders one by one (same as original)
-        foreach ($concessions as $concession) {
-            ConcessionOrder::create([
-                'order_id' => $order->id,
-                'concession_id' => $concession['id'],
-                'quantity' => $concession['quantity'],
-                'unit_price' => $concession['price']
-            ]);
-        }
-
-        SendOrderToKitchen::dispatch($order)->delay(Carbon::parse($order->send_to_kitchen_at));
-
-        return $order;
-    }
     public function getOrder(string $id): Order
     {
         return $this->model->with([
@@ -90,11 +70,5 @@ class KitchenRepository implements KitchenInterface
             'updater'
         ])
             ->findOrFail($id);
-    }
-    public function deleteOrder(string $id): bool
-    {
-        $order = $this->model->findOrFail($id);
-
-        return $order->delete();
     }
 }

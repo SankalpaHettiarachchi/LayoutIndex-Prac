@@ -35,4 +35,13 @@ class KitchenController extends Controller
 
         event(new OrderEvent($order));
     }
+
+    public function show(Order $order)
+    {
+        $orderWithDetails = $this->kitchenInterface->getOrder($order->id);
+
+        return inertia('Kitchen/viewOrder', [
+            'order' => $orderWithDetails,
+        ]);
+    }
 }
