@@ -26,8 +26,8 @@ class ConcessionsRepository implements ConcessionsInterface
                 });
             })
             ->orderBy(
-                $filters['sort'] ?? 'id',
-                $filters['direction'] ?? 'asc'
+                $filters['sort'] ?? 'updated_at',
+                $filters['direction'] ?? 'desc'
             )
             ->paginate($perPage);
     }

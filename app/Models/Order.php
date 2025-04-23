@@ -56,7 +56,6 @@ class Order extends Model
     {
         $this->update([
             'status' => self::STATUS_IN_PROGRESS,
-//            'send_to_kitchen_at' => now()
         ]);
     }
 
@@ -96,6 +95,6 @@ class Order extends Model
             return $concession->pivot->quantity * $concession->pivot->unit_price;
         });
 
-        return number_format($total, 2); // Format with 2 decimal places
+        return number_format($total, 2);
     }
 }

@@ -12,13 +12,11 @@ class ConcessionSeeder extends Seeder
 {
     public function run()
     {
-        // 1. Ensure users exist
         if (User::count() === 0) {
             $this->call(UserSeeder::class);
             $this->command->info('Created 5 staff users first');
         }
 
-        // 3. Create concessions
         $users = User::all();
         $foodTypes = ['Burger', 'Pizza', 'Hot Dog', 'Nachos', 'Popcorn'];
 

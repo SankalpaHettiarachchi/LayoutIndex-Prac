@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('order', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(Str::uuid());
+            $table->uuid('id')->primary()->default(Str::uuid());  //Use UUID for better security
             $table->string('order_no')->unique();
             $table->datetime('send_to_kitchen_at')->nullable();
             $table->enum('status', ['pending', 'in-progress', 'completed'])->default('pending');

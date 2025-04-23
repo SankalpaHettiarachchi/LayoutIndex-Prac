@@ -4,7 +4,6 @@ namespace App\Casts;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Database\Eloquent\Model;
 
 class FormattedDateTimeCast implements CastsAttributes
 {

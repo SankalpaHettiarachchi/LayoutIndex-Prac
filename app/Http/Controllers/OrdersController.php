@@ -14,6 +14,7 @@ use Inertia\Inertia;
 
 class OrdersController extends Controller
 {
+    // Implement repository via interface
     public function __construct(
         protected OrdersInterface $ordersInterface,
         protected ConcessionsInterface $concessionsInterface
@@ -33,7 +34,6 @@ class OrdersController extends Controller
     {
         return Inertia::render('Orders/createOrder');
     }
-
 
     public function store(StoreOrderRequest $request)
     {

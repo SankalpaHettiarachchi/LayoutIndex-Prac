@@ -11,7 +11,7 @@ class ConcessionOrder extends Pivot
     protected $table = 'concession_order';
 
     protected $casts = [
-        'id' => 'string', // For UUID
+        'id' => 'string',
         'unit_price' => 'decimal:2',
     ];
 
@@ -25,7 +25,7 @@ class ConcessionOrder extends Pivot
         'unit_price'
     ];
 
-    // Accessor for total price
+    // Accessor for calculate total price
     public function getTotalAttribute()
     {
         return $this->quantity * $this->unit_price;

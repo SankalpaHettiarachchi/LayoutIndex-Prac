@@ -12,6 +12,7 @@ use Inertia\Inertia;
 
 class ConcessionsController extends Controller
 {
+    // Implement repository via interface
     public function __construct(
         protected ConcessionsInterface $concessionsInterface
     ) {}

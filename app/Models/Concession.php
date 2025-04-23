@@ -15,7 +15,7 @@ class Concession extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $table = 'concession'; // Explicit table name
+    protected $table = 'concession';
 
     protected $fillable = [
         'name',
@@ -36,12 +36,13 @@ class Concession extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // Relationship to creator (user)
+    // Relationship to creator of concession (user)
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    // Relationship to updated of concession (user)
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
@@ -66,6 +67,7 @@ class Concession extends Model
         });
     }
 
+    // Ensure image path
     public function getImageUrlAttribute()
     {
         return $this->image_path
