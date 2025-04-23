@@ -107,7 +107,7 @@ export default function ViewOrder({ auth, order }) {
                                             Created
                                         </label>
                                         <div className="block w-full mt-1 p-2 bg-gray-100 rounded-md">
-                                            <p>{new Date(order.created_at).toLocaleString()}</p>
+                                            <p>{order.created_at}</p>
                                             <p className="text-sm text-gray-500">by {order.creator?.name || 'System'}</p>
                                         </div>
                                     </div>
@@ -117,7 +117,7 @@ export default function ViewOrder({ auth, order }) {
                                                 Last Updated
                                             </label>
                                             <div className="block w-full mt-1 p-2 bg-gray-100 rounded-md">
-                                                <p>{new Date(order.updated_at).toLocaleString()}</p>
+                                                <p>{order.updated_at}</p>
                                                 <p className="text-sm text-gray-500">by {order.updater?.name}</p>
                                             </div>
                                         </div>

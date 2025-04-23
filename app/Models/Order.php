@@ -27,7 +27,9 @@ class Order extends Model
     protected $casts = [
         'id' => 'string',
         'send_to_kitchen_at' => FormattedDateTimeCast::class,
-        'status' => 'string'
+        'status' => 'string',
+        'created_at' => FormattedDateTimeCast::class,
+        'updated_at' => FormattedDateTimeCast::class,
     ];
 
     public $incrementing = false;
