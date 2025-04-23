@@ -14,17 +14,23 @@ export default function Kitchen({ orders, filters }) {
     });
 
     useEffect(() => {
-        const channel = window.Echo.channel("OrderReceivedChannel")
-            .listen(".Create", (event) => {
-                console.log("Event received:", event);
+        const channel = window.Echo.channel("OrderInProgressChannel")
+            .listen(".OrderStatusUpdate", (event) => {
                 const order = event.order;
-                const message = event.message;
-                toast.info(`${message}: ${order.order_no}`);
+                toast.info(`New Order Received : ${order.order_no}`);
+                router.reload();
+            });
+
+        const completeChannel = window.Echo.channel("OrderCompleteChannel")
+            .listen(".OrderStatusUpdate", (event) => {
+                const order = event.order;
+                toast.success(`Order completed: ${order.order_no}`);
                 router.reload();
             });
 
         return () => {
-            window.Echo.leave("OrderReceivedChannel");
+            window.Echo.leave("OrderInProgressChannel");
+            window.Echo.leave("OrderCompleteChannel");
         };
     }, []);
 
@@ -40,6 +46,19 @@ export default function Kitchen({ orders, filters }) {
 
     const completeOrder = (orderId) => {
         router.post(route('kitchen.complete', { order: orderId }),{},{
+                onSuccess: () => {
+                    router.reload();
+                },
+                onError: (errors) => {
+                    console.error('Error processing order:', errors);
+                    // Error notification will come from backend event
+                }
+            }
+        );
+    };
+
+    const showOrder = (orderId) => {
+        router.get(route('kitchen.show', { order: orderId}),{},{
                 onSuccess: () => {
                     router.reload();
                 },
@@ -186,13 +205,20 @@ export default function Kitchen({ orders, filters }) {
                                                 {/* Time + action (only when in‑progress) */}
                                                 <div className="flex items-center space-x-4">
                                                     <span className="text-sm text-gray-500">
-                                                        {formatTime(order.send_to_kitchen_at)}
+                                                        {order.send_to_kitchen_at}
                                                     </span>
+
+                                                    <button
+                                                        onClick={() => showOrder(order.id)}
+                                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                    >
+                                                        Show
+                                                    </button>
 
                                                     {order.status === 'in-progress' && (
                                                         <button
                                                             onClick={() => completeOrder(order.id)}
-                                                            className="text-green-600 hover:text-green-800 text-sm font-medium"
+                                                            className="px-4 py-2 text-sm font-medium text-gray-600 bg-green border border-green-600 rounded-md shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                                         >
                                                             Complete
                                                         </button>

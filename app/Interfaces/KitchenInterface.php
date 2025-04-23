@@ -8,7 +8,5 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface KitchenInterface
 {
     public function getAll(array $filters = [],string $status = 'in-progress', int $perPage = 10): LengthAwarePaginator;
-    public function createOrder(array $orderData, array $concessions): Order;
     public function getOrder(string $id): Order;
-    public function deleteOrder(string $id): bool;
 }

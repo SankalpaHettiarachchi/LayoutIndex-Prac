@@ -23,6 +23,7 @@ Route::get('/orders/create/load-concessions', [OrdersController::class, 'loadCon
 Route::post('/orders/{order}/send', [OrdersController::class, 'send'])->name('orders.send');
 Route::Resource('/kitchen', KitchenController::class)->middleware(['auth', 'verified'])->names('kitchen');
 Route::post('/kitchen/{order}/complete', [KitchenController::class, 'complete'])->name('kitchen.complete');
+Route::get('/kitchen/{order}/show', [KitchenController::class, 'show'])->name('kitchen.show');
 
 
 Route::middleware('auth')->group(function () {

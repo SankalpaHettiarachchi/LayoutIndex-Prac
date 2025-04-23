@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Events\OrderReceivedEvent;
+use App\Events\OrderEvent;
 use App\Models\Order;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -16,6 +16,12 @@ class SendOrderToKitchen implements ShouldQueue
 
     protected $order;
 
+    // Maximum number of attempts
+    public $tries = 5;
+
+    // Delay between retries (in seconds)
+    public $backoff = [30, 60, 120, 300, 600]; // 30s, 1m, 2m, 5m, 10m
+
     public function __construct(Order $order)
     {
         $this->order = $order;
@@ -28,9 +34,16 @@ class SendOrderToKitchen implements ShouldQueue
             $this->order->update([
                 'status' => Order::STATUS_IN_PROGRESS
             ]);
-            event(new OrderReceivedEvent($this->order));
+            event(new OrderEvent($this->order));
+            Log::info('Order has been sent to Kitchen. At ::'.$this->order->send_to_kitchen_at);
         }else{
-            Log::info('No order has been sent to Kitchen. At ::'.$this->order->send_to_kitchen_at);
+            Log::error('No order has been sent to Kitchen. At ::'.$this->order->send_to_kitchen_at);
         }
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        Log::error("Failed to send order #{$this->order->id} to kitchen: ".$exception->getMessage());
+        event(new OrderEvent($this->order));
     }
 }

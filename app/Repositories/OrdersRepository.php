@@ -4,16 +4,10 @@ namespace App\Repositories;
 
 use App\Interfaces\OrdersInterface;
 use App\Jobs\SendOrderToKitchen;
-use App\Models\Concession;
 use App\Models\ConcessionOrder;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 
 class OrdersRepository implements OrdersInterface
 {
@@ -28,11 +22,16 @@ class OrdersRepository implements OrdersInterface
             ->when($filters['search'] ?? null, function ($query, $search) {
                 $query->where(function($q) use ($search) {
                     $q->where('send_to_kitchen_at', 'like', "%{$search}%")
-                        ->orWhere('status', 'like', "%{$search}%");
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhere('order_no', 'like', "%{$search}%");
                 });
             })
             ->orderBy(
-                $filters['sort'] ?? 'id',
+                $filters['sort'] ?? 'send_to_kitchen_at',
+                $filters['direction'] ?? 'asc'
+            )
+            ->orderBy(
+                $filters['sort'] ?? 'order_no',
                 $filters['direction'] ?? 'asc'
             )
             ->paginate($perPage);

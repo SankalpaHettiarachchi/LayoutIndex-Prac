@@ -127,16 +127,10 @@ export default function ViewOrder({ auth, order }) {
                                 {/* Action Buttons */}
                                 <div className="flex items-center justify-end gap-4 pt-6">
                                     <Link
-                                        href={route('orders.index')}
+                                        href={route('kitchen.index')}
                                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     >
-                                        Back to Orders
-                                    </Link>
-                                    <Link
-                                        href={route('orders.edit', order.id)}
-                                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    >
-                                        Edit Order
+                                        Back to Kitchen
                                     </Link>
                                 </div>
                             </div>

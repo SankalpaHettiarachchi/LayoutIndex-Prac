@@ -11,16 +11,9 @@ export default function AuthenticatedLayout({ header, children }) {
     const user  = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    const page    = usePage();
-    const rawUrl  = page.url;
-    const url     = typeof rawUrl === 'string' ? rawUrl : rawUrl();
-
     useEffect(() => {
-        if (url.startsWith('/concessions') || url.startsWith('/kitchen')) {
-            return;
-        }
         const channel = window.Echo.channel('NotificationChannel')
-            .listen('.NotificationEvent', (event) => {
+            .listen('.ActionResponse', (event) => {
                 event.type === 'success'
                     ? toast.success(event.message)
                     : toast.error(event.message);
@@ -29,7 +22,8 @@ export default function AuthenticatedLayout({ header, children }) {
         return () => {
             window.Echo.leave('NotificationChannel');
         };
-    }, [url]);
+
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -37,9 +31,9 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
-                            <div className="flex shrink-0 items-center">
+                            <div className="flex shrink-0 items-center text-2xl ">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                    <strong>ABC-Restaurants</strong>
                                 </Link>
                             </div>
 

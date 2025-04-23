@@ -15,22 +15,33 @@ class NotificationEvent implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
-    public $type; // 'success' or 'error'
+    public $type;
+    public $model;
 
-    public function __construct($message, $type = 'success')
+    public function __construct($message, $type = 'success',$model = null)
     {
         $this->message = $message;
         $this->type = $type;
+        $this->model = $model;
     }
 
-    public function broadcastOn(): Channel
+    public function broadcastOn(): array
     {
-        return new Channel('NotificationChannel');
+        // Determine channel based on order status
+        $channelName = match($this->model) {
+            'order' => 'OrderNotificationChannel',
+            'concession' => 'ConcessionNotificationChannel',
+            default => 'NotificationChannel'
+        };
+
+        return [
+            new Channel($channelName),
+        ];
     }
 
     public function broadcastAs(): string
     {
-        return 'NotificationEvent';
+        return 'ActionResponse';
     }
 
     public function broadcastWith(): array
