@@ -31,6 +31,8 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             )}
 
+            <h1 className="font-bold text-xl text-center text-gray-600">Login Form</h1>
+
             <form onSubmit={submit}>
                 <div>
                     <InputLabel htmlFor="email" value="Email" />
@@ -80,19 +82,22 @@ export default function Login({ status, canResetPassword }) {
                     </label>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
+                <div className="mt-4 flex items-center justify-between">
+                    <div className="text-sm">
+                        Don't have an account?{' '}
                         <Link
-                            href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            href={route('register')}
+                            className="font-medium text-indigo-600 hover:text-indigo-500"
                         >
-                            Forgot your password?
+                            Register now
                         </Link>
-                    )}
+                    </div>
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
+                    <div className="flex items-center">
+                        <PrimaryButton className="ms-4" disabled={processing}>
+                            Log in
+                        </PrimaryButton>
+                    </div>
                 </div>
             </form>
         </GuestLayout>
