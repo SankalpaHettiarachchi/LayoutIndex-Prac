@@ -27,7 +27,7 @@ class OrderEvent implements ShouldBroadcastNow
             'pending'=>'OrderPending',
             'in-progress' => 'OrderInProgressChannel',
             'completed' => 'OrderCompleteChannel',
-            default => 'OrderChannel' // Fallback channel
+            default => 'OrderChannel'
         };
 
         return [

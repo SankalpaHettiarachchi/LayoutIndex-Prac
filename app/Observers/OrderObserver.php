@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderObserver
 {
-    /**
-     * Handle the Order "created" event.
-     */
     public function creating(Order $order): void
     {
         $order->order_no = $this->generateOrderNumber();
@@ -19,9 +16,6 @@ class OrderObserver
         }
     }
 
-    /**
-     * Handle the Order "updated" event.
-     */
     public function updating(Order $order): void
     {
         if (Auth::check()) {
@@ -29,33 +23,9 @@ class OrderObserver
         }
     }
 
-    /**
-     * Handle the Order "deleted" event.
-     */
-    public function deleted(Order $order): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Order "restored" event.
-     */
-    public function restored(Order $order): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Order "force deleted" event.
-     */
-    public function forceDeleted(Order $order): void
-    {
-        //
-    }
-
     protected function generateOrderNumber(): string
     {
-        $latestOrder = Order::withTrashed() // Include soft deleted records
+        $latestOrder = Order::withTrashed()
         ->whereNotNull('order_no')
             ->orderBy('created_at', 'desc')
             ->first();

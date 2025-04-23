@@ -12,6 +12,7 @@ use Inertia\Inertia;
 
 class KitchenController extends Controller
 {
+    // Implement repository via interface
     public function __construct(
         protected KitchenInterface $kitchenInterface,
         protected ConcessionsInterface $concessionsInterface
@@ -25,7 +26,6 @@ class KitchenController extends Controller
             'filters' => $filters
         ]);
     }
-
     public function complete(Order $order)
     {
         $order->update([

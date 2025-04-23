@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
         $userIds = User::pluck('id')->toArray();

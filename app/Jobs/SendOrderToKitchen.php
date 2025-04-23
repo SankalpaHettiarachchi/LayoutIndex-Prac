@@ -16,11 +16,10 @@ class SendOrderToKitchen implements ShouldQueue
 
     protected $order;
 
-    // Maximum number of attempts
     public $tries = 5;
 
     // Delay between retries (in seconds)
-    public $backoff = [30, 60, 120, 300, 600]; // 30s, 1m, 2m, 5m, 10m
+    public $backoff = [30, 60, 120, 300, 600];
 
     public function __construct(Order $order)
     {
@@ -29,7 +28,7 @@ class SendOrderToKitchen implements ShouldQueue
 
     public function handle()
     {
-        // Optional double check
+        // Double check
         if ($this->order->status === Order::STATUS_PENDING && now()->gte($this->order->send_to_kitchen_at)) {
             $this->order->update([
                 'status' => Order::STATUS_IN_PROGRESS

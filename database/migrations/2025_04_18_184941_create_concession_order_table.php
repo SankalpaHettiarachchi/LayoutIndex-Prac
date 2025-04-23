@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('concession_order', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(Str::uuid());
+            $table->uuid('id')->primary()->default(Str::uuid());  // Use UUID for better security
             $table->foreignUuid('order_id')->constrained('order');
             $table->foreignUuid('concession_id')->constrained('concession');
             $table->integer('quantity')->default(1);

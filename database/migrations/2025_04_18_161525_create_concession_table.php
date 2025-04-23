@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('concession', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(Str::uuid());
+            $table->uuid('id')->primary()->default(Str::uuid());  //Use UUID for better security
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('image_path')->nullable();

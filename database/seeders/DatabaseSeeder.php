@@ -13,18 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Correct order to seed database
         $this->call([
             UserSeeder::class,
             ConcessionSeeder::class,
             OrderSeeder::class,
-            // Add other seeders here
         ]);
-
-//        // User::factory(10)->create();
-//
-//        User::factory()->create([
-//            'name' => 'Test User',
-//            'email' => 'test@example.com',
-//        ]);
     }
 }
