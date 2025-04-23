@@ -36,10 +36,18 @@ export default function Orders({ orders, filters }) {
                     : toast.error(event.message);
             });
 
+        const pending = window.Echo.channel("OrderPending")
+            .listen(".OrderStatusUpdate", (event) => {
+                const order = event.order;
+                toast.error(`Order sent failed: ${order.order_no}`);
+                router.reload();
+            });
+
         return () => {
             window.Echo.leave("OrderInProgressChannel");
             window.Echo.leave("OrderCompleteChannel");
             window.Echo.leave("OrderNotificationChannel");
+            window.Echo.leave("OrderPending");
         };
     }, []);
 

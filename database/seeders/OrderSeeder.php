@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Jobs\SendOrderToKitchen;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Concession;
@@ -21,17 +22,19 @@ class OrderSeeder extends Seeder
         $concessions = Concession::all();
         $baseTime = Carbon::now()->subHours(3);
 
-        // Create 5 orders with concession items
+        // Create 100 orders with concession items
         for ($i = 0; $i < 100; $i++) {
             $randomHours = rand(0, 3); // Random hours between 0-3
             $randomMinutes = rand(0, 59); // Random minutes
             $orderCreateTime = $baseTime->copy()->addSecond($i);
             $orderUpdateTime = $baseTime->copy()->addSecond($i+2);
 
+            $sendToKitchenAt = Carbon::now()->addHours($randomHours)->addMinutes($randomMinutes);
+
             $order = Order::create([
                 'id' => Str::uuid(),
                 'order_no' => $this->generateOrderNumber(),
-                'send_to_kitchen_at' => Carbon::now()->addHours($randomHours)->addMinutes($randomMinutes),
+                'send_to_kitchen_at' => $sendToKitchenAt,
                 'status' => 'pending',
                 'created_by' => $userIds[array_rand($userIds)],
                 'updated_by' => $userIds[array_rand($userIds)],
@@ -52,6 +55,9 @@ class OrderSeeder extends Seeder
                     'unit_price' => $concession->price,
                 ]);
             }
+
+            // Dispatch job for this order with delay
+            SendOrderToKitchen::dispatch($order)->delay($sendToKitchenAt);
         }
     }
 

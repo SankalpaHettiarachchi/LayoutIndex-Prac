@@ -24,6 +24,7 @@ class OrderEvent implements ShouldBroadcastNow
     {
         // Determine channel based on order status
         $channelName = match($this->order->status) {
+            'pending'=>'OrderPending',
             'in-progress' => 'OrderInProgressChannel',
             'completed' => 'OrderCompleteChannel',
             default => 'OrderChannel' // Fallback channel
