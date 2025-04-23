@@ -95,16 +95,6 @@ Use any of the following credentials to log in as a staff user:
 
 ---
 
-## 🧪 Running Tests
-
-Make sure `sqlite3` is enabled in your `php.ini`.
-
-```bash
-php artisan test
-```
-
----
-
 ## 📦 Note
 
 - For real-time features, please ensure laravel reverb and queue servers are running correclty
