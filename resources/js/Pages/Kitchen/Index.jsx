@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import dayjs from 'dayjs';
+import {OrderStatus} from "@/Components/Constants.jsx";
 
 export default function Kitchen({ orders, filters }) {
     const [localFilters, setLocalFilters] = useState({
@@ -10,7 +11,7 @@ export default function Kitchen({ orders, filters }) {
         per_page: filters.per_page || 5,
         sort: filters.sort || 'send_to_kitchen_at',
         direction: filters.direction || 'desc',
-        status: filters.status || 'in-progress', // Add status filter
+        status: filters.status || OrderStatus.IN_PROGRESS,
     });
 
     useEffect(() => {
@@ -205,7 +206,7 @@ export default function Kitchen({ orders, filters }) {
                                                 {/* Time + action (only when in‑progress) */}
                                                 <div className="flex items-center space-x-4">
                                                     <span className="text-sm text-gray-500">
-                                                        {order.send_to_kitchen_at}
+                                                        {dayjs(order.updated_at).format('YYYY-MM-DD HH:mm:ss')}
                                                     </span>
 
                                                     <button
@@ -215,7 +216,7 @@ export default function Kitchen({ orders, filters }) {
                                                         Show
                                                     </button>
 
-                                                    {order.status === 'in-progress' && (
+                                                    {order.status === OrderStatus.IN_PROGRESS && (
                                                         <button
                                                             onClick={() => completeOrder(order.id)}
                                                             className="px-4 py-2 text-sm font-medium text-gray-600 bg-green border border-green-600 rounded-md shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"

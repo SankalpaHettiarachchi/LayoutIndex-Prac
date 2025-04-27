@@ -22,8 +22,16 @@ class KitchenController extends Controller
     {
         $filters = $request->only(['search', 'per_page', 'sort', 'direction','status']);
 
+        // Map string status to enum value
+        $status = match ($filters['status'] ?? 'in-progress') {
+            'completed' => OrderStatusEnum::COMPLETED,
+            default => OrderStatusEnum::IN_PROGRESS,  // Default to 'in-progress'
+        };
+
+        dd($this->kitchenInterface->getAll($filters, $status,$filters['per_page'] ?? 5));
+
         return Inertia::render('Kitchen/Index', [
-            'orders' => $this->kitchenInterface->getAll($filters, $filters['status'] ?? OrderStatusEnum::IN_PROGRESS,$filters['per_page'] ?? 5),
+            'orders' => $this->kitchenInterface->getAll($filters, $status,$filters['per_page'] ?? 5),
             'filters' => $filters
         ]);
     }

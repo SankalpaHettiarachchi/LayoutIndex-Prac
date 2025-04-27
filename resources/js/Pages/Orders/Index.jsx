@@ -82,6 +82,17 @@ export default function Orders({ orders, filters }) {
         setIsSendModalOpen(false);
     };
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case OrderStatus.IN_PROGRESS:
+                return 'bg-yellow-100 text-yellow-800';
+            case OrderStatus.COMPLETED:
+                return 'bg-green-100 text-green-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+
     const columns = [
         {
             header: 'Order No',
@@ -119,7 +130,15 @@ export default function Orders({ orders, filters }) {
         {
             header: 'Status',
             field: 'status',
-            sortable: true
+            sortable: true,
+            render: (item) => {
+                const statusColor = getStatusColor(item.status); // Get dynamic status color
+                return (
+                    <span className={`px-2 py-1 text-xs rounded-full ${statusColor}`}>
+                      {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                    </span>
+                );
+            }
         },
         {
             header: 'Actions',
@@ -153,8 +172,7 @@ export default function Orders({ orders, filters }) {
                 </div>
             )
         }
-    ]
-    ;
+    ];
 
     return (
         <AuthenticatedLayout

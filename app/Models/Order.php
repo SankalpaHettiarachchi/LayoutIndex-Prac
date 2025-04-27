@@ -29,9 +29,7 @@ class Order extends Model
     protected $casts = [
         'id' => 'string',
         'send_to_kitchen_at' => FormattedDateTimeCast::class,
-        'status' => OrderStatusEnum::class,
-        'created_at' => FormattedDateTimeCast::class,
-        'updated_at' => FormattedDateTimeCast::class,
+        'status' => OrderStatusEnum::class
     ];
 
     public $incrementing = false;
