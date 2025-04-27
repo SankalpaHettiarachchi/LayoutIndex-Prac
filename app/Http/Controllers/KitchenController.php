@@ -28,8 +28,6 @@ class KitchenController extends Controller
             default => OrderStatusEnum::IN_PROGRESS,  // Default to 'in-progress'
         };
 
-        dd($this->kitchenInterface->getAll($filters, $status,$filters['per_page'] ?? 5));
-
         return Inertia::render('Kitchen/Index', [
             'orders' => $this->kitchenInterface->getAll($filters, $status,$filters['per_page'] ?? 5),
             'filters' => $filters

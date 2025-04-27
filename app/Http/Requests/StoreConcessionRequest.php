@@ -17,7 +17,7 @@ class StoreConcessionRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif',
+            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

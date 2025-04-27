@@ -79,25 +79,33 @@ class ConcessionsRepository implements ConcessionsInterface
     }
     protected function processAndStoreImage(UploadedFile $image): string
     {
-        // Initialize ImageManager with driver
-        $manager = new ImageManager(new Driver());
+        try {
 
-        // Read the uploaded file
-        $img = $manager->read($image->getRealPath());
+            // Initialize ImageManager with driver
+            $manager = new ImageManager(new Driver());
 
-        // Resize with aspect ratio preservation
-        $img->resize(800, 600, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
+            // Read the uploaded file
+            $img = $manager->read($image->getRealPath());
 
-        // Generate unique filename and path
-        $filename = 'concession_'.Str::uuid().'.webp';
-        $path = 'concessions/'.$filename;
+            // Resize with aspect ratio preservation
+            $img->resize(800, 600, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
 
-        // Store in public disk as WebP
-        Storage::disk('public')->put($path, $img->toWebp(80));
+            // Generate unique filename and path
+            $filename = 'concession_'.Str::uuid().'.webp';
+            $path = 'concessions/'.$filename;
 
-        return $path;
+            // Store in public disk as WebP
+            Storage::disk('public')->put($path, $img->toWebp(80));
+
+            return $path;
+
+        } catch (\Exception $e) {
+            Log::error('Image processing failed: '.$e->getMessage());
+            throw new \RuntimeException('Image processing failed');
+        }
+
     }
 }
