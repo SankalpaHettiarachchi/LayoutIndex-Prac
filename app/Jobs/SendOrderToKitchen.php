@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\OrderStatusEnum;
 use App\Events\OrderEvent;
 use App\Models\Order;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,9 +30,9 @@ class SendOrderToKitchen implements ShouldQueue
     public function handle()
     {
         // Double check
-        if ($this->order->status === Order::STATUS_PENDING && now()->gte($this->order->send_to_kitchen_at)) {
+        if ($this->order->status === OrderStatusEnum::PENDING && now()->gte($this->order->send_to_kitchen_at)) {
             $this->order->update([
-                'status' => Order::STATUS_IN_PROGRESS
+                'status' => OrderStatusEnum::IN_PROGRESS
             ]);
             event(new OrderEvent($this->order));
             Log::info('Order has been sent to Kitchen. At ::'.$this->order->send_to_kitchen_at);

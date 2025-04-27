@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import CountdownTimer from '@/Components/CountdownTimer';
 import { Dialog } from '@headlessui/react';
 import dayjs from 'dayjs';
+import {OrderStatus} from "@/Components/Constants.jsx";
 
 export default function Orders({ orders, filters }) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -104,10 +105,10 @@ export default function Orders({ orders, filters }) {
             field: 'countdown',
             render: (item) => {
                 if (
-                    item.status === 'in-progress' ||
-                    item.status === 'completed' ||// already sent
-                    !item.send_to_kitchen_at ||     // no time set
-                    dayjs(item.send_to_kitchen_at).isBefore(dayjs()) // time passed
+                    item.status === OrderStatus.IN_PROGRESS ||
+                    item.status === OrderStatus.COMPLETED ||
+                    !item.send_to_kitchen_at ||
+                    dayjs(item.send_to_kitchen_at).isBefore(dayjs())
                 ) {
                     return <span className="text-gray-500">Already Sent</span>;
                 }

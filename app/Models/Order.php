@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use App\Enums\OrderStatusEnum;
+
 
 class Order extends Model
 {
@@ -27,18 +29,13 @@ class Order extends Model
     protected $casts = [
         'id' => 'string',
         'send_to_kitchen_at' => FormattedDateTimeCast::class,
-        'status' => 'string',
+        'status' => OrderStatusEnum::class,
         'created_at' => FormattedDateTimeCast::class,
         'updated_at' => FormattedDateTimeCast::class,
     ];
 
     public $incrementing = false;
     protected $keyType = 'string';
-
-    // Status constants
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_IN_PROGRESS = 'in-progress';
-    public const STATUS_COMPLETED = 'completed';
 
     // Relationship to creator
     public function creator(): BelongsTo
@@ -49,25 +46,6 @@ class Order extends Model
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
-    }
-
-    // Helper methods
-    public function markAsInProgress()
-    {
-        $this->update([
-            'status' => self::STATUS_IN_PROGRESS,
-        ]);
-    }
-
-    public function markAsCompleted()
-    {
-        $this->update(['status' => self::STATUS_COMPLETED]);
-    }
-
-    // Scope for status
-    public function scopePending($query)
-    {
-        return $query->where('status', self::STATUS_PENDING);
     }
 
     protected static function boot()

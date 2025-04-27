@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Enums\OrderStatusEnum;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +15,8 @@ class OrderObserver
         if (Auth::check()) {
             $order->created_by = Auth::id();
         }
+
+        $order->status = OrderStatusEnum::PENDING;
     }
 
     public function updating(Order $order): void

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\OrderStatusEnum;
 use App\Interfaces\KitchenInterface;
 use App\Jobs\SendOrderToKitchen;
 use App\Models\ConcessionOrder;
@@ -14,7 +15,7 @@ class KitchenRepository implements KitchenInterface
 
     public function __construct(protected Order $model) {}
 
-    public function getAll(array $filters = [],string $status = 'in-progress', int $perPage = 5): LengthAwarePaginator
+    public function getAll(array $filters = [],OrderStatusEnum $status = OrderStatusEnum::IN_PROGRESS, int $perPage = 5): LengthAwarePaginator
     {
         $query = $this->model->query()
             ->with(['concessions' => function ($query) {

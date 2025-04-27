@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatusEnum;
 use App\Events\NotificationEvent;
 use App\Events\OrderEvent;
 use App\Events\OrderReceivedEvent;
@@ -95,7 +96,7 @@ class OrdersController extends Controller
     public function send(Order $order)
     {
         $order->update([
-            'status' => Order::STATUS_IN_PROGRESS
+            'status' => OrderStatusEnum::IN_PROGRESS
         ]);
         event(new OrderEvent($order));
     }

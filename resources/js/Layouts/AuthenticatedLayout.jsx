@@ -33,7 +33,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         <div className="flex">
                             <div className="flex shrink-0 items-center text-2xl ">
                                 <Link href="/">
-                                    <strong>ABC-Restaurants</strong>
+                                    <strong>ABC RESTAURANTS</strong>
                                 </Link>
                             </div>
 

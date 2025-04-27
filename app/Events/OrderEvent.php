@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Enums\OrderStatusEnum;
 use Carbon\Carbon;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -24,9 +25,9 @@ class OrderEvent implements ShouldBroadcastNow
     {
         // Determine channel based on order status
         $channelName = match($this->order->status) {
-            'pending'=>'OrderPending',
-            'in-progress' => 'OrderInProgressChannel',
-            'completed' => 'OrderCompleteChannel',
+            OrderStatusEnum::PENDING =>'OrderPending',
+            OrderStatusEnum::IN_PROGRESS  => 'OrderInProgressChannel',
+            OrderStatusEnum::COMPLETED => 'OrderCompleteChannel',
             default => 'OrderChannel'
         };
 
