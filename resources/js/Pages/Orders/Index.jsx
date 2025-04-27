@@ -104,7 +104,8 @@ export default function Orders({ orders, filters }) {
             field: 'countdown',
             render: (item) => {
                 if (
-                    item.status === 'in-progress' || // already sent
+                    item.status === 'in-progress' ||
+                    item.status === 'completed' ||// already sent
                     !item.send_to_kitchen_at ||     // no time set
                     dayjs(item.send_to_kitchen_at).isBefore(dayjs()) // time passed
                 ) {
