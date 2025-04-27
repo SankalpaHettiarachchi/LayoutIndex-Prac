@@ -66,12 +66,4 @@ class Concession extends Model
             }
         });
     }
-
-    // Ensure image path
-    public function getImageUrlAttribute()
-    {
-        return $this->image_path
-            ? Storage::disk('public')->url($this->image_path)
-            : null;
-    }
 }
